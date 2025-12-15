@@ -15,19 +15,29 @@ export const generateSyllables = (): string[] => {
 
 // German two-syllable words
 export const twoSyllableWords: string[] = [
-    'Mama', 'Papa', 'Oma', 'Opa', 'Kind', 'Mann', 'Frau', 'Tante', 'Onkel', 'Baby',
-    'Name', 'Hund', 'Katze', 'Maus', 'Hase', 'Bär', 'Löwe', 'Tiger', 'Affe', 'Ente',
-    'Fisch', 'Vogel', 'Igel', 'Pferd', 'Schule', 'Klasse', 'Tisch', 'Stift', 'Buch', 'Heft',
-    'Tasche', 'Tafel', 'Haus', 'Auto', 'Bett', 'Ball', 'Sofa', 'Lampe', 'Tür', 'Fenster',
-    'Garten', 'Küche', 'Bild', 'Apfel', 'Banane', 'Brot', 'Ei', 'Eis', 'Milch', 'Wasser',
-    'Saft', 'Kuchen', 'Suppe', 'Käse', 'Sonne', 'Mond', 'Stern', 'Baum', 'Blume', 'Gras',
-    'Wolke', 'See', 'Berg', 'Weg', 'Wald', 'Hand', 'Fuß', 'Nase', 'Auge', 'Ohr',
-    'Mund', 'Arm', 'Bein', 'Kopf', 'Rad', 'Zug', 'Schiff', 'Geschenk', 'Geld', 'Kiste',
-    'gut', 'groß', 'klein', 'alt', 'neu', 'jung', 'schön', 'lieb', 'nett', 'froh',
-    'hell', 'dunkel', 'warm', 'kalt', 'schnell', 'langsam', 'laut', 'leise',
-    'rot', 'gelb', 'grün', 'blau', 'weiß', 'schwarz', 'bunt',
-    'gehen', 'kommen', 'sehen', 'sagen', 'machen', 'geben', 'nehmen', 'laufen',
-    'schlafen', 'essen', 'trinken', 'lesen', 'schreiben', 'malen', 'spielen', 'lachen'
+    'acht', 'Affe', 'alle', 'als', 'alt', 'Amelie', 'Ameise', 'Ampel', 'an', 'Apfel', 'Arm',
+    'Ast', 'Aufgabe', 'Auge', 'Auto', 'Baby', 'Ball', 'Banane', 'Baum', 'Bär', 'Berg',
+    'Bett', 'Bein', 'Bild', 'bis', 'blau', 'bleiben', 'Blume', 'brot', 'Buch', 'bunt',
+    'da', 'das', 'dich', 'doch', 'dunkel', 'durch', 'Ei', 'Eis', 'elf', 'Ende', 'Ente',
+    'er', 'Esel', 'es', 'essen', 'Euro', 'Fenster', 'finden', 'Fisch', 'Frau', 'Freund',
+    'froh', 'Fuß', 'Gabel', 'Garten', 'Gast', 'geben', 'gehen', 'Geld', 'gelb', 'Geschenk',
+    'Glas', 'Gras', 'groß', 'grün', 'gut', 'Hab', 'haben', 'Hai', 'Hand', 'Hase',
+    'Haus', 'Heft', 'hell', 'heute', 'hinter', 'holen', 'Hose', 'Hund', 'ich', 'Igel',
+    'in', 'ist', 'Jung', 'Kaffee', 'kalt', 'Katze', 'Käse', 'Kind', 'Kino', 'Kiste',
+    'Klasse', 'klein', 'Kleid', 'kommen', 'Kopf', 'Küche', 'Kuchen', 'Kugel', 'Lampe',
+    'langsam', 'lachen', 'laufen', 'laut', 'leben', 'legen', 'leicht', 'leise', 'lesen',
+    'lieb', 'lila', 'Liste', 'los', 'Löwe', 'machen', 'malen', 'Mama', 'Mann', 'Maus',
+    'Milch', 'mit', 'Mond', 'Mund', 'nach', 'Nagel', 'Name', 'nase', 'Nebel', 'nehmen',
+    'nein', 'neu', 'neun', 'nett', 'nicht', 'nun', 'Nudel', 'Ohr', 'Oma', 'Onkel',
+    'Opa', 'oft', 'Papa', 'Paket', 'Pferd', 'Pinsel', 'Puppe', 'Rad', 'Regal', 'rot',
+    'Saft', 'Salat', 'Salami', 'sagen', 'Salami', 'Schere', 'Schiff', 'schlafen',
+    'schön', 'Schreiben', 'Schuh', 'Schule', 'schwarz', 'See', 'sehen', 'Seife',
+    'schnell', 'Sessel', 'sind', 'Sofa', 'so', 'soll', 'Sonne', 'sparen', 'spielen',
+    'Sport', 'sprechen', 'stehen', 'Stein', 'Stern', 'Stift', 'Stunde', 'Suppe',
+    'Tafel', 'Tal', 'Tante', 'Tasche', 'Taste', 'Telefon', 'Tiger', 'Tisch', 'trinken',
+    'tun', 'Tunnel', 'Tür', 'Uhr', 'um', 'und', 'Vogel', 'Wald', 'Warm', 'warum',
+    'was', 'Wasser', 'Weg', 'weil', 'weiter', 'weiß', 'wer', 'wir', 'wo', 'Wolke',
+    'Zug'
 ];
 
 // Shuffle array utility
