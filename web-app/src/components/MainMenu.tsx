@@ -37,6 +37,18 @@ const MainMenu = () => {
                     <span className="icon">📝</span>
                     <span>Two-syllable Words (DE)</span>
                 </Link>
+                <Link to="/phrases" className="menu-button">
+                    <span className="icon">🗣️</span>
+                    <span>Phrases (DE)</span>
+                </Link>
+                <Link to="/sentences" className="menu-button">
+                    <span className="icon">📚</span>
+                    <span>100+ Sentences (Lola)</span>
+                </Link>
+                <Link to="/extended-sentences" className="menu-button">
+                    <span className="icon">👶</span>
+                    <span>Extended Sentences</span>
+                </Link>
             </div>
 
             {/* Other */}

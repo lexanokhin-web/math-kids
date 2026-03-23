@@ -5,6 +5,9 @@ import MainMenu from './components/MainMenu';
 import GameView from './components/GameView';
 import SyllablesView from './components/SyllablesView';
 import TwoSyllableWordsView from './components/TwoSyllableWordsView';
+import PhrasesView from './components/PhrasesView';
+import SentencesView from './components/SentencesView';
+import ExtendedSentencesView from './components/ExtendedSentencesView';
 import ProgressView from './components/ProgressView';
 import SettingsView from './components/SettingsView';
 import './index.css';
@@ -32,6 +35,9 @@ function App() {
           <Route path="/game/:mode" element={<GameView />} />
           <Route path="/syllables" element={<SyllablesView />} />
           <Route path="/words" element={<TwoSyllableWordsView />} />
+          <Route path="/phrases" element={<PhrasesView />} />
+          <Route path="/sentences" element={<SentencesView />} />
+          <Route path="/extended-sentences" element={<ExtendedSentencesView />} />
           <Route path="/progress" element={<ProgressView />} />
           <Route
             path="/settings"

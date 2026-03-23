@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { GameMode, MathProblem } from '../utils/gameLogic';
@@ -31,6 +31,14 @@ const GameView = () => {
     const [score, setScore] = useState(0);
     const [showFeedback, setShowFeedback] = useState<'correct' | 'incorrect' | null>(null);
     const [showAchievement, setShowAchievement] = useState<Achievement | null>(null);
+    const [prevGameMode, setPrevGameMode] = useState(gameMode);
+
+    // Reset game state when mode changes (Standard React pattern for prop-based resets)
+    if (gameMode !== prevGameMode) {
+        setPrevGameMode(gameMode);
+        setProblem(generateProblem(gameMode, difficulty));
+        setScore(0);
+    }
 
     const nextProblem = useCallback(() => {
         setProblem(generateProblem(gameMode, difficulty));
@@ -76,9 +84,7 @@ const GameView = () => {
         nextProblem();
     };
 
-    useEffect(() => {
-        nextProblem();
-    }, [gameMode, nextProblem]);
+    // Initial load and mode change are handled in render body above
 
     return (
         <div className="game-view">
