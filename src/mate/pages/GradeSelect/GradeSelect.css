@@ -1,0 +1,248 @@
+/* ============ Grade Selection Page Styles ============ */
+
+.grade-select {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1.5rem;
+    background: var(--bg-primary);
+}
+
+/* ---- Header ---- */
+.grade-select__header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 2;
+}
+
+.grade-select__logo {
+    font-size: var(--fs-4xl);
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+}
+
+.grade-select__subtitle {
+    font-size: var(--fs-lg);
+    color: var(--text-secondary);
+    font-weight: 500;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* ---- Age Group Sections ---- */
+.grade-select__groups {
+    width: 100%;
+    max-width: 1100px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.grade-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.grade-group__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.grade-group__emoji {
+    font-size: 1.8rem;
+}
+
+.grade-group__title {
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.grade-group__subtitle {
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.grade-group__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+/* ---- Grade Card ---- */
+.grade-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+
+.grade-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.grade-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+
+.grade-card:hover::before {
+    opacity: 1;
+}
+
+.grade-card--kids::before {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(192, 132, 252, 0.08));
+}
+
+.grade-card--teen::before {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(124, 58, 237, 0.08));
+}
+
+.grade-card--senior::before {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), rgba(240, 171, 252, 0.08));
+}
+
+.grade-card__number {
+    font-size: var(--fs-3xl);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+.grade-card__label {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.grade-card__desc {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.grade-card__emoji {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease, transform 0.3s var(--ease-bounce);
+}
+
+.grade-card:hover .grade-card__emoji {
+    opacity: 0.7;
+    transform: scale(1.2) rotate(-10deg);
+}
+
+.grade-card__progress {
+    margin-top: 1rem;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.grade-card__progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent-gradient);
+    transition: width 0.6s var(--ease-bounce);
+}
+
+/* ---- Background Floating Shapes ---- */
+.grade-select__bg-shapes {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    animation: float 8s ease-in-out infinite;
+}
+
+.bg-shape--1 {
+    width: 300px;
+    height: 300px;
+    background: var(--accent-primary);
+    top: -80px;
+    right: -80px;
+    animation-delay: 0s;
+}
+
+.bg-shape--2 {
+    width: 200px;
+    height: 200px;
+    background: var(--accent-secondary);
+    bottom: 10%;
+    left: -60px;
+    animation-delay: 2s;
+}
+
+.bg-shape--3 {
+    width: 150px;
+    height: 150px;
+    background: var(--accent-tertiary);
+    top: 40%;
+    right: 10%;
+    animation-delay: 4s;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .grade-select {
+        padding: 1.5rem 1rem;
+    }
+
+    .grade-select__logo {
+        font-size: var(--fs-2xl);
+    }
+
+    .grade-group__grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .grade-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .grade-card__number {
+        font-size: var(--fs-2xl);
+    }
+}

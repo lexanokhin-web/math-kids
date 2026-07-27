@@ -1,0 +1,96 @@
+/* ============ Playground Styles ============ */
+
+.playground {
+    min-height: calc(100vh - var(--navbar-height));
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Progress Header ---- */
+.playground__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.playground__progress-bar {
+    flex: 1;
+    height: 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    min-width: 150px;
+}
+
+.playground__progress-fill {
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-full);
+    transition: width 0.5s var(--ease-bounce);
+}
+
+.playground__counter {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.playground__timer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.playground__timer--warning {
+    color: var(--accent-danger);
+    animation: pulse-glow 1s infinite;
+}
+
+.playground__hearts {
+    display: flex;
+    gap: 4px;
+    font-size: 1.2rem;
+}
+
+/* ---- Exercise Area ---- */
+.playground__exercise {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+}
+
+/* ---- Points Popup ---- */
+.playground__points-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 200;
+    font-size: var(--fs-3xl);
+    font-weight: 900;
+}
+
+.playground__points-popup--correct {
+    color: var(--accent-success);
+}
+
+.playground__points-popup--wrong {
+    color: var(--accent-danger);
+}
+
+@media (max-width: 640px) {
+    .playground__header {
+        gap: 0.5rem;
+    }
+}

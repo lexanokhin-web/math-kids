@@ -1,0 +1,268 @@
+/* ============================================
+   MathOlympiad — Scoped Design System
+   Scoping to .mate-app-root to avoid conflicts.
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+.mate-app-root {
+  /* ---------- CSS Reset for the sub-app ---------- */
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  transition: background 0.6s ease, color 0.4s ease;
+  line-height: normal; /* Resetting potentially changed line-height */
+  
+  /* Resetting font size to standard 16px for sub-app */
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mate-app-root * {
+  box-sizing: border-box;
+}
+
+.mate-app-root a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mate-app-root button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+.mate-app-root ul, .mate-app-root ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mate-app-root img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- Kids Theme (Default) ---------- */
+.mate-app-root {
+  /* Colors */
+  --bg-primary: #fef7ff;
+  --bg-secondary: #fff0f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fff5f9;
+  --bg-overlay: rgba(255, 255, 255, 0.85);
+
+  --accent-primary: #ff6b9d;
+  --accent-secondary: #c084fc;
+  --accent-tertiary: #67e8f9;
+  --accent-success: #4ade80;
+  --accent-warning: #fbbf24;
+  --accent-danger: #f87171;
+  --accent-gradient: linear-gradient(135deg, #ff6b9d 0%, #c084fc 50%, #67e8f9 100%);
+
+  --text-primary: #2d1b4e;
+  --text-secondary: #6b5b7b;
+  --text-muted: #a89bb5;
+  --text-on-accent: #ffffff;
+
+  --border-color: rgba(192, 132, 252, 0.2);
+  --shadow-sm: 0 2px 8px rgba(192, 132, 252, 0.1);
+  --shadow-md: 0 4px 20px rgba(192, 132, 252, 0.15);
+  --shadow-lg: 0 8px 40px rgba(192, 132, 252, 0.2);
+  --shadow-glow: 0 0 30px rgba(255, 107, 157, 0.3);
+
+  /* Typography */
+  --font-main: 'Fredoka', sans-serif;
+  --font-heading: 'Fredoka', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: 3rem;
+  --fs-4xl: 4rem;
+
+  /* Spacing */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Animations */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.2s var(--ease-smooth);
+  --transition-mid: 0.4s var(--ease-smooth);
+  --transition-slow: 0.6s var(--ease-smooth);
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --navbar-height: 70px;
+  --content-max-width: 1200px;
+}
+
+/* ---------- Teen Theme (5-8) ---------- */
+.mate-app-root[data-theme="teen"] {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-card-hover: #1a2744;
+  --bg-overlay: rgba(15, 15, 26, 0.9);
+
+  --accent-primary: #00d4ff;
+  --accent-secondary: #7c3aed;
+  --accent-tertiary: #06ffa5;
+  --accent-success: #06ffa5;
+  --accent-warning: #ffd60a;
+  --accent-danger: #ff4757;
+  --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #06ffa5 100%);
+
+  --text-primary: #e8e8f0;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-on-accent: #0f0f1a;
+
+  --border-color: rgba(124, 58, 237, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 212, 255, 0.1);
+  --shadow-lg: 0 8px 40px rgba(124, 58, 237, 0.15);
+  --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
+
+  --font-main: 'Space Grotesk', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* ---------- Senior Theme (9-12) ---------- */
+.mate-app-root[data-theme="senior"] {
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-card: #1c1c22;
+  --bg-card-hover: #232329;
+  --bg-overlay: rgba(9, 9, 11, 0.95);
+
+  --accent-primary: #a78bfa;
+  --accent-secondary: #f0abfc;
+  --accent-tertiary: #818cf8;
+  --accent-success: #34d399;
+  --accent-warning: #fbbf24;
+  --accent-danger: #f87171;
+  --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #f0abfc 50%, #818cf8 100%);
+
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-on-accent: #09090b;
+
+  --border-color: rgba(167, 139, 250, 0.15);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(167, 139, 250, 0.1);
+  --shadow-glow: 0 0 40px rgba(167, 139, 250, 0.2);
+
+  --font-main: 'Inter', sans-serif;
+  --font-heading: 'Inter', sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* ---------- Utility Classes (Scoped to .mate-app-root) ---------- */
+.mate-app-root .glass {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+}
+
+.mate-app-root .gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mate-app-root .glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.mate-app-root .container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ---------- Scrollbar Scoped ---------- */
+.mate-app-root ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mate-app-root ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.mate-app-root ::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: var(--radius-full);
+}
+
+.mate-app-root ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* ---------- Selection Scoped ---------- */
+.mate-app-root ::selection {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+/* ---------- Keyframe Animations (Global names are fine, usually) ---------- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 157, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(255, 107, 157, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
