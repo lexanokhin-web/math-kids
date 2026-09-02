@@ -390,6 +390,7 @@ const ClockGameView: React.FC = () => {
     const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
     const [showGermanPhrase, setShowGermanPhrase] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
 
     // Reward / Completion
     const [showReward, setShowReward] = useState(false);
@@ -643,6 +644,17 @@ const ClockGameView: React.FC = () => {
                     title="24-Stunden / 12-Stunden Modus wechseln"
                 >
                     {is24Hour ? '24h' : '12h'}
+                </button>
+
+                {/* Info Help Button */}
+                <button
+                    type="button"
+                    className="clock-info-btn"
+                    onClick={() => setShowInfoModal(true)}
+                    title="Erklärung der Uhrzeiger"
+                    aria-label="Hilfe & Zeiger-Erklärung"
+                >
+                    ℹ️
                 </button>
 
                 {/* Input Mode Toggle */}
@@ -925,24 +937,6 @@ const ClockGameView: React.FC = () => {
                     </svg>
                 </div>
 
-                {/* Hand & 24h Color Legend */}
-                <div className="clock-hand-legend">
-                    <span className="legend-chip hour-legend">
-                        <span className="legend-dot red" />
-                        <strong>Rot:</strong> Stunde {is24Hour ? '(0–23)' : '(1–12)'}
-                    </span>
-                    <span className="legend-chip minute-legend">
-                        <span className="legend-dot blue" />
-                        <strong>Blau:</strong> Minute (0–59)
-                    </span>
-                    {is24Hour && (
-                        <span className="legend-chip hour24-legend">
-                            <span className="legend-dot amber" />
-                            <strong>Gelb:</strong> 13–24h
-                        </span>
-                    )}
-                </div>
-
                 {/* German Phrase Bubble on Correct Answer with Audio Button */}
                 <AnimatePresence>
                     {showGermanPhrase && (
@@ -1076,6 +1070,74 @@ const ClockGameView: React.FC = () => {
                         onSelectLevel={handleSelectLevel}
                         onClose={() => setShowLevelPicks(false)}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* Info Legend Modal (Zeiger & 24h Erklärung) */}
+            <AnimatePresence>
+                {showInfoModal && (
+                    <motion.div
+                        className="clock-info-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowInfoModal(false)}
+                    >
+                        <motion.div
+                            className="clock-info-modal-card glass-card"
+                            initial={{ scale: 0.85, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.85, opacity: 0, y: 20 }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="info-modal-header">
+                                <h4>💡 Wie liest man die Uhr?</h4>
+                                <button
+                                    type="button"
+                                    className="info-modal-close"
+                                    onClick={() => setShowInfoModal(false)}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="info-chips-list">
+                                <div className="info-chip-row">
+                                    <span className="legend-dot red" />
+                                    <div className="info-row-text">
+                                        <strong>Roter Zeiger (Stunde):</strong>
+                                        <p>Zeigt die <b>Stunde</b> {is24Hour ? '(0 bis 23 Uhr)' : '(1 bis 12 Uhr)'}.</p>
+                                    </div>
+                                </div>
+
+                                <div className="info-chip-row">
+                                    <span className="legend-dot blue" />
+                                    <div className="info-row-text">
+                                        <strong>Blauer Zeiger (Minute):</strong>
+                                        <p>Zeigt die <b>Minute</b> (0 bis 59 auf den blauen Feldern).</p>
+                                    </div>
+                                </div>
+
+                                {is24Hour && (
+                                    <div className="info-chip-row">
+                                        <span className="legend-dot amber" />
+                                        <div className="info-row-text">
+                                            <strong>Gelbe Zahlen (13–24h):</strong>
+                                            <p>Für Nachmittag & Abend (z.B. 2 Uhr nachmittags = 14:00 Uhr).</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                className="info-modal-ok-btn"
+                                onClick={() => setShowInfoModal(false)}
+                            >
+                                Alles klar! 👍
+                            </button>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

@@ -1948,6 +1948,141 @@ body {
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
+.clock-info-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #cbd5e1;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.clock-info-btn:hover {
+  background: #ffffff;
+  transform: scale(1.08);
+}
+
+/* Info Legend Modal Popover */
+.clock-info-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.clock-info-modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.info-modal-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.info-modal-close {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.info-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.info-chips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-chip-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.info-chip-row .legend-dot {
+  margin-top: 5px;
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+}
+
+.info-row-text {
+  text-align: left;
+}
+
+.info-row-text strong {
+  font-size: 0.92rem;
+  color: #1e293b;
+  display: block;
+}
+
+.info-row-text p {
+  margin: 2px 0 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.info-modal-ok-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transition: transform 0.15s;
+}
+
+.info-modal-ok-btn:hover {
+  transform: translateY(-1px);
+}
+
 /* Daytime Sky Banner */
 .daytime-sky-banner {
   width: 100%;
