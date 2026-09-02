@@ -2276,6 +2276,53 @@ body {
   margin-top: 2px;
 }
 
+.clock-outer-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.clock-side-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 14px;
+  font-family: var(--font-main);
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.clock-side-badge.vor-badge {
+  background: #fee2e2;
+  border: 2px solid #fca5a5;
+  color: #dc2626;
+}
+
+.clock-side-badge.nach-badge {
+  background: #dbeafe;
+  border: 2px solid #93c5fd;
+  color: #2563eb;
+}
+
+.side-badge-arrow {
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.side-badge-text {
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+}
+
 .clock-svg-wrapper {
   width: 250px;
   height: 250px;
@@ -2600,14 +2647,28 @@ body {
     font-size: 1.05rem !important;
   }
 
-  .clock-hint-sub {
-    display: none !important;
+  .clock-outer-wrapper {
+    gap: 4px !important;
+  }
+
+  .clock-side-badge {
+    padding: 6px 6px !important;
+    border-radius: 10px !important;
+    border-width: 1.5px !important;
+  }
+
+  .side-badge-arrow {
+    font-size: 1rem !important;
+  }
+
+  .side-badge-text {
+    font-size: 0.68rem !important;
   }
 
   .clock-svg-wrapper {
-    width: 225px !important;
-    height: 225px !important;
-    max-width: 82vw !important;
+    width: 215px !important;
+    height: 215px !important;
+    max-width: 76vw !important;
   }
 
   .clock-hand-legend {
