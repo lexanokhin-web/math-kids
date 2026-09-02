@@ -447,47 +447,55 @@ const ClockGameView: React.FC = () => {
                             </>
                         )}
 
-                        {/* Hour Hand (Rotated with smooth spring transition) */}
-                        <motion.g
-                            animate={{ rotate: hourAngle }}
-                            transition={{ type: 'spring', stiffness: 120, damping: 14 }}
-                            style={{ originX: '150px', originY: '150px' }}
-                            filter="url(#handShadow)"
+                        {/* Hour Hand (Rotated with smooth transition around center 150, 150) */}
+                        <g
+                            transform={`rotate(${hourAngle} 150 150)`}
+                            style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Hour Hand Shape */}
+                            {/* Hour Hand Body - Bold and vibrant red */}
                             <path
-                                d="M 146 150 L 148 85 L 150 75 L 152 85 L 154 150 Z"
-                                fill="url(#hourHandGrad)"
+                                d="M 143 150 L 145 82 L 150 68 L 155 82 L 157 150 Z"
+                                fill="#ef4444"
+                                stroke="#b91c1c"
+                                strokeWidth="2.5"
+                                strokeLinejoin="round"
                             />
-                            {/* Counter-weight tail */}
+                            {/* Hour Hand Counter-tail */}
                             <path
-                                d="M 147 150 L 147 165 L 153 165 L 153 150 Z"
-                                fill="url(#hourHandGrad)"
+                                d="M 144 150 L 144 168 A 6 6 0 0 0 156 168 L 156 150 Z"
+                                fill="#ef4444"
+                                stroke="#b91c1c"
+                                strokeWidth="2.5"
+                                strokeLinejoin="round"
                             />
-                        </motion.g>
+                        </g>
 
-                        {/* Minute Hand (Rotated with smooth spring transition) */}
-                        <motion.g
-                            animate={{ rotate: minuteAngle }}
-                            transition={{ type: 'spring', stiffness: 120, damping: 14 }}
-                            style={{ originX: '150px', originY: '150px' }}
-                            filter="url(#handShadow)"
+                        {/* Minute Hand (Rotated with smooth transition around center 150, 150) */}
+                        <g
+                            transform={`rotate(${minuteAngle} 150 150)`}
+                            style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Minute Hand Shape */}
+                            {/* Minute Hand Body - Sleek and vibrant blue */}
                             <path
-                                d="M 147.5 150 L 149 52 L 150 42 L 151 52 L 152.5 150 Z"
-                                fill="url(#minHandGrad)"
+                                d="M 146 150 L 147.5 48 L 150 34 L 152.5 48 L 154 150 Z"
+                                fill="#3b82f6"
+                                stroke="#1d4ed8"
+                                strokeWidth="2"
+                                strokeLinejoin="round"
                             />
-                            {/* Counter-weight tail */}
+                            {/* Minute Hand Counter-tail */}
                             <path
-                                d="M 148 150 L 148 170 L 152 170 L 152 150 Z"
-                                fill="url(#minHandGrad)"
+                                d="M 146.5 150 L 146.5 174 A 3.5 3.5 0 0 0 153.5 174 L 153.5 150 Z"
+                                fill="#3b82f6"
+                                stroke="#1d4ed8"
+                                strokeWidth="2"
+                                strokeLinejoin="round"
                             />
-                        </motion.g>
+                        </g>
 
                         {/* Center Pin Hub */}
-                        <circle cx="150" cy="150" r="8" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" />
-                        <circle cx="150" cy="150" r="3.5" fill="#d97706" />
+                        <circle cx="150" cy="150" r="9" fill="#f59e0b" stroke="#ffffff" strokeWidth="3" />
+                        <circle cx="150" cy="150" r="4" fill="#b45309" />
                     </svg>
                 </div>
 
