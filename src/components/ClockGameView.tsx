@@ -391,12 +391,59 @@ const ClockGameView: React.FC = () => {
                         <circle cx="150" cy="150" r="142" fill="#ffffff" stroke="#cbd5e1" strokeWidth="4" />
                         <circle cx="150" cy="150" r="136" fill="url(#clockDialGrad)" stroke="#94a3b8" strokeWidth="2" />
 
-                        {/* Minute & Hour Ticks */}
+                        {/* Outer Minute Hints (00, 05, 10, 15, ... 55) */}
+                        {[
+                            { n: 12, text: '00' },
+                            { n: 1, text: '05' },
+                            { n: 2, text: '10' },
+                            { n: 3, text: '15' },
+                            { n: 4, text: '20' },
+                            { n: 5, text: '25' },
+                            { n: 6, text: '30' },
+                            { n: 7, text: '35' },
+                            { n: 8, text: '40' },
+                            { n: 9, text: '45' },
+                            { n: 10, text: '50' },
+                            { n: 11, text: '55' }
+                        ].map(m => {
+                            const angle = (m.n * 30 * Math.PI) / 180;
+                            const r = 123;
+                            const x = 150 + r * Math.sin(angle);
+                            const y = 150 - r * Math.cos(angle);
+
+                            return (
+                                <g key={`min-badge-${m.n}`}>
+                                    <rect
+                                        x={x - 12}
+                                        y={y - 8}
+                                        width={24}
+                                        height={16}
+                                        rx={5}
+                                        fill="#eff6ff"
+                                        stroke="#93c5fd"
+                                        strokeWidth={1.2}
+                                    />
+                                    <text
+                                        x={x}
+                                        y={y + 4}
+                                        textAnchor="middle"
+                                        fontSize="10.5"
+                                        fontWeight="900"
+                                        fontFamily="var(--font-main)"
+                                        fill="#1d4ed8"
+                                    >
+                                        {m.text}
+                                    </text>
+                                </g>
+                            );
+                        })}
+
+                        {/* Minute Ticks */}
                         {Array.from({ length: 60 }).map((_, i) => {
-                            const angle = (i * 6 * Math.PI) / 180;
                             const isMajor = i % 5 === 0;
-                            const outerR = 132;
-                            const innerR = isMajor ? 120 : 126;
+                            const angle = (i * 6 * Math.PI) / 180;
+                            const outerR = 111;
+                            const innerR = isMajor ? 104 : 107;
                             const x1 = 150 + outerR * Math.sin(angle);
                             const y1 = 150 - outerR * Math.cos(angle);
                             const x2 = 150 + innerR * Math.sin(angle);
@@ -409,17 +456,17 @@ const ClockGameView: React.FC = () => {
                                     y1={y1}
                                     x2={x2}
                                     y2={y2}
-                                    stroke={isMajor ? '#475569' : '#cbd5e1'}
-                                    strokeWidth={isMajor ? 3 : 1.5}
+                                    stroke={isMajor ? '#3b82f6' : '#cbd5e1'}
+                                    strokeWidth={isMajor ? 2.5 : 1.2}
                                     strokeLinecap="round"
                                 />
                             );
                         })}
 
-                        {/* Dial Numbers 1-12 */}
+                        {/* Inner Hour Numbers 1-12 */}
                         {dialNumbers.map(n => {
                             const angle = (n * 30 * Math.PI) / 180;
-                            const r = 100;
+                            const r = 85;
                             const x = 150 + r * Math.sin(angle);
                             const y = 150 - r * Math.cos(angle) + 7;
 
@@ -430,22 +477,14 @@ const ClockGameView: React.FC = () => {
                                     y={y}
                                     className="clock-dial-number"
                                     textAnchor="middle"
-                                    fontSize="22"
-                                    fontWeight="800"
-                                    fill="#1e293b"
+                                    fontSize="21"
+                                    fontWeight="900"
+                                    fill="#0f172a"
                                 >
                                     {n}
                                 </text>
                             );
                         })}
-
-                        {/* Level 1 Beginner Helper Labels */}
-                        {level === 1 && (
-                            <>
-                                <text x="150" y="38" className="minute-helper-text" textAnchor="middle">:00</text>
-                                <text x="150" y="272" className="minute-helper-text" textAnchor="middle">:30</text>
-                            </>
-                        )}
 
                         {/* Hour Hand (Rotated with smooth transition around center 150, 150) */}
                         <g
