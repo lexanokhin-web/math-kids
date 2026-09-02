@@ -2001,6 +2001,78 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.sky-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-listen-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.audio-listen-btn:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.audio-listen-btn.speaking-active {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  animation: pulseAudio 1.2s infinite;
+}
+
+@keyframes pulseAudio {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.clock-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mini-speak-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mini-speak-btn:hover {
+  background: #ffffff;
+  transform: scale(1.1);
+}
+
+.mini-speak-btn.active {
+  background: #10b981;
+  color: white;
+  animation: pulseAudio 1.2s infinite;
+}
+
 .legend-dot.amber {
   background: #f59e0b;
   box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
@@ -2135,15 +2207,51 @@ body {
 .german-phrase-bubble {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   background: #ecfdf5;
   border: 2px solid #34d399;
   color: #065f46;
-  padding: 8px 16px;
-  border-radius: 16px;
-  font-weight: 800;
-  font-size: 1.1rem;
-  box-shadow: var(--shadow-sm);
+  padding: 10px 18px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.german-phrase-bubble:hover {
+  transform: translateY(-1px);
+  background: #d1fae5;
+}
+
+.german-phrase-bubble.bubble-speaking {
+  border-color: #059669;
+  background: #a7f3d0;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+}
+
+.phrase-text-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.phrase-colloquial {
+  font-weight: 900;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.phrase-detail {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.repeat-icon {
+  font-size: 0.95rem;
+  opacity: 0.7;
+  margin-left: auto;
 }
 
 /* Digital Time Inputs Display */
@@ -2273,8 +2381,15 @@ body {
 }
 
 .choice-phrase {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #1e293b;
   margin-top: 4px;
+}
+
+.choice-subphrase {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 1px;
 }

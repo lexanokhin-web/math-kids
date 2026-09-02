@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -102,44 +102,178 @@ export const getTimeTheme = (hour24: number): TimeTheme => {
     }
 };
 
+const GERMAN_NUM_WORDS: Record<number, string> = {
+    0: 'null',
+    1: 'eins',
+    2: 'zwei',
+    3: 'drei',
+    4: 'vier',
+    5: 'fünf',
+    6: 'sechs',
+    7: 'sieben',
+    8: 'acht',
+    9: 'neun',
+    10: 'zehn',
+    11: 'elf',
+    12: 'zwölf',
+    13: 'dreizehn',
+    14: 'vierzehn',
+    15: 'fünfzehn',
+    16: 'sechzehn',
+    17: 'siebzehn',
+    18: 'achtzehn',
+    19: 'neunzehn',
+    20: 'zwanzig',
+    25: 'fünfundzwanzig',
+    30: 'dreißig',
+    35: 'fünfunddreißig',
+    40: 'vierzig',
+    45: 'fünfundvierzig',
+    50: 'fünfzig',
+    55: 'fünfundfünfzig'
+};
+
+const capitalizeWord = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+
+export interface GermanTimeInfo {
+    colloquialRule: string;    // "Viertel nach drei", "Fünf vor halb vier", "Halb vier", etc.
+    timeOfDayContext: string;  // "am Nachmittag ☀️"
+    timeOfDayDe: string;       // "nachmittags" / "am Nachmittag"
+    formal24: string;          // "15:15 Uhr"
+    spokenText: string;        // Sentence for TTS
+    displayPhrase: string;     // Combined phrase
+}
+
+export const getSmartGermanTime = (hour24: number, minutes: number): GermanTimeInfo => {
+    const h12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+    const nextH12 = (h12 % 12) + 1;
+
+    const hWord = h12 === 1 ? 'eins' : (GERMAN_NUM_WORDS[h12] || String(h12));
+    const nextHWord = nextH12 === 1 ? 'eins' : (GERMAN_NUM_WORDS[nextH12] || String(nextH12));
+    const hUhrWord = h12 === 1 ? 'ein' : (GERMAN_NUM_WORDS[h12] || String(h12));
+
+    let colloquialRule = '';
+
+    if (minutes === 0) {
+        colloquialRule = `${capitalizeWord(hUhrWord)} Uhr`;
+    } else if (minutes === 5) {
+        colloquialRule = `Fünf nach ${hWord}`;
+    } else if (minutes === 10) {
+        colloquialRule = `Zehn nach ${hWord}`;
+    } else if (minutes === 15) {
+        colloquialRule = `Viertel nach ${hWord}`;
+    } else if (minutes === 20) {
+        colloquialRule = `Zwanzig nach ${hWord}`;
+    } else if (minutes === 25) {
+        colloquialRule = `Fünf vor halb ${nextHWord}`;
+    } else if (minutes === 30) {
+        colloquialRule = `Halb ${nextHWord}`;
+    } else if (minutes === 35) {
+        colloquialRule = `Fünf nach halb ${nextHWord}`;
+    } else if (minutes === 40) {
+        colloquialRule = `Zwanzig vor ${nextHWord}`;
+    } else if (minutes === 45) {
+        colloquialRule = `Viertel vor ${nextHWord}`;
+    } else if (minutes === 50) {
+        colloquialRule = `Zehn vor ${nextHWord}`;
+    } else if (minutes === 55) {
+        colloquialRule = `Fünf vor ${nextHWord}`;
+    } else if (minutes < 25) {
+        const mWord = GERMAN_NUM_WORDS[minutes] || String(minutes);
+        colloquialRule = `${capitalizeWord(mWord)} nach ${hWord}`;
+    } else if (minutes < 30) {
+        const diff = 30 - minutes;
+        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
+        colloquialRule = `${capitalizeWord(diffWord)} vor halb ${nextHWord}`;
+    } else if (minutes < 35) {
+        const diff = minutes - 30;
+        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
+        colloquialRule = `${capitalizeWord(diffWord)} nach halb ${nextHWord}`;
+    } else {
+        const diff = 60 - minutes;
+        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
+        colloquialRule = `${capitalizeWord(diffWord)} vor ${nextHWord}`;
+    }
+
+    let timeOfDayContext = '';
+    let timeOfDayDe = '';
+    if (hour24 >= 6 && hour24 < 12) {
+        timeOfDayContext = 'am Morgen 🌅';
+        timeOfDayDe = 'am Morgen';
+    } else if (hour24 >= 12 && hour24 < 18) {
+        timeOfDayContext = 'am Nachmittag ☀️';
+        timeOfDayDe = 'am Nachmittag';
+    } else if (hour24 >= 18 && hour24 < 22) {
+        timeOfDayContext = 'am Abend 🌇';
+        timeOfDayDe = 'am Abend';
+    } else {
+        timeOfDayContext = 'in der Nacht 🌙';
+        timeOfDayDe = 'in der Nacht';
+    }
+
+    const formattedH = hour24 < 10 ? `0${hour24}` : `${hour24}`;
+    const formattedM = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    const formal24 = `${formattedH}:${formattedM} Uhr`;
+
+    const spokenText = `Es ist ${colloquialRule} ${timeOfDayDe}.`;
+    const displayPhrase = `${colloquialRule} ${timeOfDayContext}`;
+
+    return {
+        colloquialRule,
+        timeOfDayContext,
+        timeOfDayDe,
+        formal24,
+        spokenText,
+        displayPhrase
+    };
+};
+
+// Text-to-speech for German with optimal voice selection
+export const speakGermanTime = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+        if (!('speechSynthesis' in window)) {
+            resolve();
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.82; // Clear educational pace
+        utterance.pitch = 1.05; // Cheerful friendly pitch
+
+        const voices = window.speechSynthesis.getVoices();
+        const deVoices = voices.filter(v => v.lang.startsWith('de') || v.lang === 'de_DE');
+        const bestVoice = deVoices.find(v =>
+            v.name.includes('Google') ||
+            v.name.includes('Natural') ||
+            v.name.includes('Anna') ||
+            v.name.includes('Katja') ||
+            v.name.includes('Marlene') ||
+            v.name.includes('Petra')
+        ) || deVoices[0];
+
+        if (bestVoice) {
+            utterance.voice = bestVoice;
+        }
+
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+
+        window.speechSynthesis.speak(utterance);
+    });
+};
+
 interface ClockProblem {
     hour24: number;      // 0 to 23
     hour12: number;      // 1 to 12
     minute: number;      // 0 to 59
     targetDigital: string; // "15:30"
-    germanPhrase: string;
+    germanTime: GermanTimeInfo;
     options: string[];
     theme: TimeTheme;
 }
-
-const getGermanTimePhrase24 = (hour24: number, minutes: number): string => {
-    const h12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
-    const nextH12 = (h12 % 12) + 1;
-
-    let basePhrase = '';
-    if (minutes === 0) {
-        basePhrase = `${h12} Uhr`;
-    } else if (minutes === 15) {
-        basePhrase = `Viertel nach ${h12}`;
-    } else if (minutes === 30) {
-        basePhrase = `Halb ${nextH12}`;
-    } else if (minutes === 45) {
-        basePhrase = `Viertel vor ${nextH12}`;
-    } else if (minutes < 30) {
-        basePhrase = `${minutes} nach ${h12}`;
-    } else {
-        basePhrase = `${60 - minutes} vor ${nextH12}`;
-    }
-
-    let timeContext = '';
-    if (hour24 >= 6 && hour24 < 12) timeContext = 'am Morgen 🌅';
-    else if (hour24 >= 12 && hour24 < 18) timeContext = 'am Nachmittag ☀️';
-    else if (hour24 >= 18 && hour24 < 22) timeContext = 'am Abend 🌇';
-    else timeContext = 'in der Nacht 🌙';
-
-    const formatted24 = formatTime(hour24, minutes);
-    return `${formatted24} Uhr (${basePhrase} ${timeContext})`;
-};
 
 const formatTime = (h: number, m: number): string => {
     const formattedH = h < 10 ? `0${h}` : `${h}`;
@@ -150,10 +284,8 @@ const formatTime = (h: number, m: number): string => {
 const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem => {
     let hour24: number;
     if (use24Hour) {
-        // Full 24 hours: 0 to 23
         hour24 = Math.floor(Math.random() * 24);
     } else {
-        // 12 hour representation (1 to 12)
         hour24 = Math.floor(Math.random() * 12) + 1;
     }
 
@@ -164,7 +296,7 @@ const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem =
         // Level 1: Full hours & half hours (:00, :30)
         minute = Math.random() > 0.5 ? 0 : 30;
     } else if (level === 2) {
-        // Level 2: 5-minute steps
+        // Level 2: 5-minute steps (Viertel, Halb, 5 vor halb, 5 nach halb, etc.)
         const fiveMinSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
         minute = fiveMinSteps[Math.floor(Math.random() * fiveMinSteps.length)];
     } else {
@@ -173,7 +305,7 @@ const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem =
     }
 
     const targetDigital = formatTime(hour24, minute);
-    const germanPhrase = getGermanTimePhrase24(hour24, minute);
+    const germanTime = getSmartGermanTime(hour24, minute);
     const theme = getTimeTheme(hour24);
 
     // Generate 3 plausible wrong options
@@ -222,7 +354,7 @@ const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem =
         hour12,
         minute,
         targetDigital,
-        germanPhrase,
+        germanTime,
         options,
         theme
     };
@@ -257,10 +389,26 @@ const ClockGameView: React.FC = () => {
 
     const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
     const [showGermanPhrase, setShowGermanPhrase] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     // Reward / Completion
     const [showReward, setShowReward] = useState(false);
     const [rewardData, setRewardData] = useState<Reward | null>(null);
+
+    const isSpeakingRef = useRef(false);
+
+    const playVoicePronunciation = useCallback((text?: string) => {
+        const phraseToSpeak = text || problem.germanTime.spokenText;
+        if (!phraseToSpeak) return;
+
+        isSpeakingRef.current = true;
+        setIsSpeaking(true);
+
+        speakGermanTime(phraseToSpeak).finally(() => {
+            isSpeakingRef.current = false;
+            setIsSpeaking(false);
+        });
+    }, [problem.germanTime.spokenText]);
 
     const nextRound = useCallback(() => {
         setHourInput('');
@@ -321,12 +469,14 @@ const ClockGameView: React.FC = () => {
             setScore(s => s + 10 + streak * 2);
             setStreak(st => st + 1);
 
+            // Trigger smart German audio pronunciation
+            playVoicePronunciation(problem.germanTime.spokenText);
+
             if ((streak + 1) % 5 === 0) {
                 confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
             }
 
             if (round >= 10) {
-                // Completed game session
                 const res = trackGeneralGame('clock', 25, true);
                 setTimeout(() => {
                     setRewardData({
@@ -336,12 +486,12 @@ const ClockGameView: React.FC = () => {
                         sticker: res.unlockedSticker
                     });
                     setShowReward(true);
-                }, 900);
+                }, 1600);
             } else {
                 setRound(r => r + 1);
                 setTimeout(() => {
                     nextRound();
-                }, 1300);
+                }, 2200);
             }
         } else {
             soundManager.playIncorrect();
@@ -363,7 +513,6 @@ const ClockGameView: React.FC = () => {
 
             if (!isNaN(num) && num <= maxAllowed) {
                 setHourInput(nextVal);
-                // Auto switch to minutes if 2 digits or first digit > 2 (e.g. 3-9 cannot have second digit for hours)
                 if (nextVal.length === 2 || (is24Hour && num >= 3) || (!is24Hour && num >= 2)) {
                     setActiveField('minutes');
                 }
@@ -538,9 +687,24 @@ const ClockGameView: React.FC = () => {
                         <span className="sky-label-ru">{currentTheme.nameRu} ({is24Hour ? (problem.hour24 >= 12 ? '12:00 – 23:59' : '00:00 – 11:59') : '12h'})</span>
                     </div>
                 </div>
-                {is24Hour && problem.hour24 >= 12 && (
-                    <span className="badge-24h-indicator">24-Stunden-Format</span>
-                )}
+
+                <div className="sky-banner-actions">
+                    {/* Audio Listen Button */}
+                    <button
+                        type="button"
+                        className={`audio-listen-btn ${isSpeaking ? 'speaking-active' : ''}`}
+                        onClick={() => playVoicePronunciation()}
+                        title="Uhrzeit auf Deutsch anhören 🗣️"
+                        aria-label="Aussprache anhören"
+                    >
+                        <span className="audio-icon">{isSpeaking ? '🔊' : '🔈'}</span>
+                        <span className="audio-btn-text">Anhören</span>
+                    </button>
+
+                    {is24Hour && problem.hour24 >= 12 && (
+                        <span className="badge-24h-indicator">24h</span>
+                    )}
+                </div>
             </motion.div>
 
             {/* Dynamic Analog Clock Card */}
@@ -556,11 +720,21 @@ const ClockGameView: React.FC = () => {
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             >
                 <div className="clock-title-bar">
-                    <h3 style={{ color: currentTheme.numberColor }}>
-                        Wie spät ist es? {currentTheme.icon}
-                    </h3>
+                    <div className="clock-title-row">
+                        <h3 style={{ color: currentTheme.numberColor }}>
+                            Wie spät ist es? {currentTheme.icon}
+                        </h3>
+                        <button
+                            type="button"
+                            className={`mini-speak-btn ${isSpeaking ? 'active' : ''}`}
+                            onClick={() => playVoicePronunciation()}
+                            title="Aussprache anhören"
+                        >
+                            {isSpeaking ? '🔊' : '🔈'}
+                        </button>
+                    </div>
                     <p className="clock-hint-sub" style={{ color: currentTheme.subtextColor }}>
-                        Schau auf die Zeiger und die Tageszeit
+                        Schau auf die Zeiger und bestimme die Uhrzeit
                     </p>
                 </div>
 
@@ -793,17 +967,23 @@ const ClockGameView: React.FC = () => {
                     )}
                 </div>
 
-                {/* German Phrase Bubble on Correct Answer */}
+                {/* German Phrase Bubble on Correct Answer with Audio Button */}
                 <AnimatePresence>
                     {showGermanPhrase && (
                         <motion.div
-                            className="german-phrase-bubble"
+                            className={`german-phrase-bubble ${isSpeaking ? 'bubble-speaking' : ''}`}
                             initial={{ scale: 0.8, opacity: 0, y: 10 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.8, opacity: 0 }}
+                            onClick={() => playVoicePronunciation()}
+                            title="Nochmal auf Deutsch anhören 🗣️"
                         >
-                            <span className="speaker-icon">🗣️</span>
-                            <span className="phrase-text">"{problem.germanPhrase}"</span>
+                            <span className="speaker-icon">{isSpeaking ? '🔊' : '🗣️'}</span>
+                            <div className="phrase-text-group">
+                                <span className="phrase-colloquial">"{problem.germanTime.colloquialRule}"</span>
+                                <span className="phrase-detail">{problem.germanTime.formal24} • {problem.germanTime.timeOfDayDe}</span>
+                            </div>
+                            <span className="repeat-icon">🔄</span>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -886,22 +1066,26 @@ const ClockGameView: React.FC = () => {
                     </div>
                 </div>
             ) : (
-                /* Choice Grid (4 Options) */
+                /* Choice Grid (4 Options) with Colloquial German Rule Text */
                 <div className="clock-choices-grid">
-                    {problem.options.map((opt, idx) => (
-                        <motion.button
-                            key={opt + '-' + idx}
-                            className="clock-choice-card"
-                            onClick={() => handleAnswerSubmit(opt)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <span className="choice-digital">{opt}</span>
-                            <span className="choice-phrase">
-                                {getGermanTimePhrase24(parseInt(opt.split(':')[0], 10), parseInt(opt.split(':')[1], 10))}
-                            </span>
-                        </motion.button>
-                    ))}
+                    {problem.options.map((opt, idx) => {
+                        const [optH, optM] = opt.split(':').map(Number);
+                        const optGerman = getSmartGermanTime(optH, optM);
+
+                        return (
+                            <motion.button
+                                key={opt + '-' + idx}
+                                className="clock-choice-card"
+                                onClick={() => handleAnswerSubmit(opt)}
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.96 }}
+                            >
+                                <span className="choice-digital">{opt}</span>
+                                <span className="choice-phrase">{optGerman.colloquialRule}</span>
+                                <span className="choice-subphrase">{optGerman.timeOfDayDe}</span>
+                            </motion.button>
+                        );
+                    })}
                 </div>
             )}
 
