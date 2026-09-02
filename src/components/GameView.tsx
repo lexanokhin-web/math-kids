@@ -195,6 +195,33 @@ const GameView = () => {
                 </button>
             </div>
 
+            {/* Quick Operation Switcher for Typing Mode (➕ Plus | ➖ Minus | 🔀 Mix) */}
+            {inputMode === 'manual' && (
+                <div className="math-operation-tabs">
+                    <button
+                        type="button"
+                        className={`operation-tab-btn ${gameMode === 'manualAddition' ? 'active plus' : ''}`}
+                        onClick={() => navigate('/game/manualAddition')}
+                    >
+                        ➕ Plus
+                    </button>
+                    <button
+                        type="button"
+                        className={`operation-tab-btn ${gameMode === 'manualSubtraction' ? 'active minus' : ''}`}
+                        onClick={() => navigate('/game/manualSubtraction')}
+                    >
+                        ➖ Minus
+                    </button>
+                    <button
+                        type="button"
+                        className={`operation-tab-btn ${gameMode === 'manual' ? 'active mix' : ''}`}
+                        onClick={() => navigate('/game/manual')}
+                    >
+                        🔀 Mix
+                    </button>
+                </div>
+            )}
+
             {/* Problem Display */}
             <motion.div
                 className="problem-card"

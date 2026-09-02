@@ -121,10 +121,12 @@ const MainMenu = () => {
                 variants={itemVariants}
             >
                 <div className="section-grid">
-                    <MenuCard to="/game/manual" icon="✍️" title="Selber tippen" color="#6366f1" />
+                    <MenuCard to="/game/manualAddition" icon="✍️➕" title="Plus tippen" color="#10b981" />
+                    <MenuCard to="/game/manualSubtraction" icon="✍️➖" title="Minus tippen" color="#f43f5e" />
+                    <MenuCard to="/game/manual" icon="✍️🔀" title="Mix tippen" color="#6366f1" />
                     <MenuCard to="/clock" icon="⏰" title="Uhrzeit lernen" color="#3b82f6" level={progress.clockLevel} />
-                    <MenuCard to="/game/addition" icon="➕" title="Plusrechnen" color="#10b981" />
-                    <MenuCard to="/game/subtraction" icon="➖" title="Minusrechnen" color="#f43f5e" />
+                    <MenuCard to="/game/addition" icon="➕" title="Plus (4 Optionen)" color="#10b981" />
+                    <MenuCard to="/game/subtraction" icon="➖" title="Minus (4 Optionen)" color="#f43f5e" />
                     <MenuCard to="/game/multiplication" icon="×" title="Malrechnen" color="#f59e0b" />
                     <MenuCard to="/game/verticalAddition" icon="⬇️" title="Schriftlich Plus" color="#06b6d4" />
                     <MenuCard to="/game/verticalSubtraction" icon="⬇️" title="Schriftlich Minus" color="#8b5cf6" />
