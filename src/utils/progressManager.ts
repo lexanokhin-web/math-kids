@@ -45,6 +45,8 @@ export interface Progress {
     sequenceMemoryGamesCount: number;
     sequenceMemoryLevel: number;
     matchingLevel: number;
+    clockGamesCount: number;
+    clockLevel: number;
     
     [key: string]: number | string | Achievement[] | string[] | boolean | null | undefined;
 }
@@ -66,6 +68,7 @@ const defaultAchievements: Achievement[] = [
     { id: 'synonym_start', title: 'Wortakrobat', description: 'Finde deine ersten Synonyme', requiredScore: 0, isUnlocked: false },
     { id: 'synonym_pro', title: 'Sprach-Jongleur', description: 'Beende 10 Synonym-Spiele', requiredScore: 0, isUnlocked: false },
     { id: 'artikel_king', title: 'Artikel-König', description: 'Werde Meister der Artikel', requiredScore: 0, isUnlocked: false },
+    { id: 'clock_master', title: 'Uhren-Meister', description: 'Lerne die Uhrzeit wie ein Profi', requiredScore: 0, isUnlocked: false },
     { id: 'all_rounder', title: 'Всезнайка', description: 'Сыграй во все 10 новых игр', requiredScore: 0, isUnlocked: false },
 ];
 
@@ -105,7 +108,9 @@ export const getEmptyProgress = (): Progress => ({
     imageMatchLevel: 1,
     sequenceMemoryGamesCount: 0,
     sequenceMemoryLevel: 1,
-    matchingLevel: 1
+    matchingLevel: 1,
+    clockGamesCount: 0,
+    clockLevel: 1
 });
 
 

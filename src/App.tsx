@@ -29,6 +29,7 @@ import BridgeGameView from './components/BridgeGameView';
 import ImageWordMatchView from './components/ImageWordMatchView';
 import MultiplicationLevelSelect from './components/MultiplicationLevelSelect';
 import MultiplicationGameView from './components/MultiplicationGameView';
+import ClockGameView from './components/ClockGameView';
 import MateApp from './mate/App';
 import './index.css';
 
@@ -78,6 +79,7 @@ function App() {
           <Route path="/sequence-memory" element={<SequenceMemoryGameView />} />
           <Route path="/bridge" element={<BridgeGameView />} />
           <Route path="/image-match" element={<ImageWordMatchView />} />
+          <Route path="/clock" element={<ClockGameView />} />
           <Route path="/mate/*" element={<MateApp />} />
           <Route
             path="/settings"

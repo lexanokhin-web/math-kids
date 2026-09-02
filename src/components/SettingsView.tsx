@@ -11,10 +11,14 @@ interface SettingsViewProps {
 const SettingsView = ({ themeId, onThemeChange }: SettingsViewProps) => {
     const navigate = useNavigate();
     const [soundEnabled, setSoundEnabled] = useState(soundManager.isEnabled());
-    const [difficulty, setDifficulty] = useState(() => {
-        const stored = localStorage.getItem('mathkids_difficulty');
-        return stored ? parseInt(stored) : 10;
+    const [inputMode, setInputModeState] = useState<'choice' | 'manual'>(() => {
+        return (localStorage.getItem('mathkids_input_mode') as 'choice' | 'manual') || 'choice';
     });
+    const [difficulty, setDifficulty] = useState<number>(() => {
+        const stored = localStorage.getItem('mathkids_difficulty');
+        return stored ? parseInt(stored, 10) : 10;
+    });
+    const [inputValue, setInputValue] = useState<string>(String(difficulty));
 
     useEffect(() => {
         localStorage.setItem('mathkids_difficulty', String(difficulty));
@@ -25,6 +29,47 @@ const SettingsView = ({ themeId, onThemeChange }: SettingsViewProps) => {
         setSoundEnabled(newValue);
         soundManager.setEnabled(newValue);
     };
+
+    const handleInputModeChange = (mode: 'choice' | 'manual') => {
+        setInputModeState(mode);
+        localStorage.setItem('mathkids_input_mode', mode);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setInputValue(val);
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed) && parsed >= 5 && parsed <= 1000) {
+            setDifficulty(parsed);
+        }
+    };
+
+    const handleInputBlur = () => {
+        const parsed = parseInt(inputValue, 10);
+        if (isNaN(parsed) || parsed < 5) {
+            setDifficulty(5);
+            setInputValue('5');
+        } else if (parsed > 1000) {
+            setDifficulty(1000);
+            setInputValue('1000');
+        } else {
+            setDifficulty(parsed);
+            setInputValue(String(parsed));
+        }
+    };
+
+    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = parseInt(e.target.value, 10);
+        setDifficulty(val);
+        setInputValue(String(val));
+    };
+
+    const handlePresetClick = (val: number) => {
+        setDifficulty(val);
+        setInputValue(String(val));
+    };
+
+    const quickPresets = [10, 20, 50, 100, 1000];
 
     return (
         <div className="settings-view">
@@ -54,16 +99,61 @@ const SettingsView = ({ themeId, onThemeChange }: SettingsViewProps) => {
                     </div>
 
                     <div className="setting-row">
-                        <label>Max Number</label>
+                        <label>Eingabemodus</label>
+                        <div className="mode-segmented-control">
+                            <button
+                                type="button"
+                                className={`control-btn ${inputMode === 'choice' ? 'active' : ''}`}
+                                onClick={() => handleInputModeChange('choice')}
+                            >
+                                🔲 4 Optionen
+                            </button>
+                            <button
+                                type="button"
+                                className={`control-btn ${inputMode === 'manual' ? 'active' : ''}`}
+                                onClick={() => handleInputModeChange('manual')}
+                            >
+                                ✍️ Selber tippen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="setting-row setting-row-difficulty">
+                        <div className="setting-row-header">
+                            <label htmlFor="max-number-input">Max Number</label>
+                            <input
+                                id="max-number-input"
+                                type="number"
+                                className="difficulty-number-input"
+                                min="5"
+                                max="1000"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                                onBlur={handleInputBlur}
+                                aria-label="Max Number"
+                            />
+                        </div>
                         <div className="difficulty-control">
                             <input
                                 type="range"
                                 min="5"
-                                max="999"
+                                max="1000"
                                 value={difficulty}
-                                onChange={e => setDifficulty(parseInt(e.target.value))}
+                                onChange={handleSliderChange}
+                                aria-label="Max Number Slider"
                             />
-                            <span className="value">{difficulty}</span>
+                        </div>
+                        <div className="difficulty-presets">
+                            {quickPresets.map(preset => (
+                                <button
+                                    key={preset}
+                                    type="button"
+                                    className={`preset-chip ${difficulty === preset ? 'active' : ''}`}
+                                    onClick={() => handlePresetClick(preset)}
+                                >
+                                    {preset}
+                                </button>
+                            ))}
                         </div>
                     </div>
 

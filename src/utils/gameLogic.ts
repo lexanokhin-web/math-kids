@@ -1,17 +1,26 @@
 // Game logic ported from Swift GameModels.swift
 
-export type GameMode = 'addition' | 'subtraction' | 'verticalAddition' | 'verticalSubtraction';
+export type GameMode =
+    | 'addition'
+    | 'subtraction'
+    | 'verticalAddition'
+    | 'verticalSubtraction'
+    | 'manual'
+    | 'manualAddition'
+    | 'manualSubtraction';
 
 export interface MathProblem {
     firstNumber: number;
     secondNumber: number;
     gameMode: GameMode;
+    operation?: '+' | '-';
     options: number[];
     correctAnswer: number;
 }
 
-export const getSymbol = (mode: GameMode): string => {
-    return mode.toLowerCase().includes('addition') ? '+' : '-';
+export const getSymbol = (mode: GameMode, problem?: MathProblem): string => {
+    if (problem?.operation) return problem.operation;
+    return mode.toLowerCase().includes('subtraction') ? '-' : '+';
 };
 
 export const isVertical = (mode: GameMode): boolean => {
@@ -20,16 +29,27 @@ export const isVertical = (mode: GameMode): boolean => {
 
 export const getModeTitle = (mode: GameMode): string => {
     const titles: Record<GameMode, string> = {
-        addition: 'Horizontal Addition',
-        subtraction: 'Horizontal Subtraction',
-        verticalAddition: 'Vertical Addition',
-        verticalSubtraction: 'Vertical Subtraction'
+        addition: 'Plusrechnen',
+        subtraction: 'Minusrechnen',
+        verticalAddition: 'Schriftlich Plus',
+        verticalSubtraction: 'Schriftlich Minus',
+        manual: 'Selber tippen',
+        manualAddition: 'Plus (Selber tippen)',
+        manualSubtraction: 'Minus (Selber tippen)'
     };
-    return titles[mode];
+    return titles[mode] || 'Mathematik';
 };
 
 export const generateProblem = (mode: GameMode, difficulty: number = 999): MathProblem => {
-    const isAddition = mode.toLowerCase().includes('addition');
+    let isAddition = true;
+    if (mode === 'subtraction' || mode === 'verticalSubtraction' || mode === 'manualSubtraction') {
+        isAddition = false;
+    } else if (mode === 'manual') {
+        isAddition = Math.random() > 0.5;
+    } else {
+        isAddition = true;
+    }
+
     const avoidZero = Math.random() > 0.1; // 90% chance to avoid zeros if possible
 
     let first: number;
@@ -76,6 +96,7 @@ export const generateProblem = (mode: GameMode, difficulty: number = 999): MathP
         firstNumber: first,
         secondNumber: second,
         gameMode: mode,
+        operation: isAddition ? '+' : '-',
         options,
         correctAnswer
     };

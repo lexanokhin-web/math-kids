@@ -121,9 +121,11 @@ const MainMenu = () => {
                 variants={itemVariants}
             >
                 <div className="section-grid">
-                    <MenuCard to="/game/multiplication" icon="×" title="Malrechnen" color="#f59e0b" />
+                    <MenuCard to="/game/manual" icon="✍️" title="Selber tippen" color="#6366f1" />
+                    <MenuCard to="/clock" icon="⏰" title="Uhrzeit lernen" color="#3b82f6" level={progress.clockLevel} />
                     <MenuCard to="/game/addition" icon="➕" title="Plusrechnen" color="#10b981" />
                     <MenuCard to="/game/subtraction" icon="➖" title="Minusrechnen" color="#f43f5e" />
+                    <MenuCard to="/game/multiplication" icon="×" title="Malrechnen" color="#f59e0b" />
                     <MenuCard to="/game/verticalAddition" icon="⬇️" title="Schriftlich Plus" color="#06b6d4" />
                     <MenuCard to="/game/verticalSubtraction" icon="⬇️" title="Schriftlich Minus" color="#8b5cf6" />
                 </div>
@@ -137,6 +139,7 @@ const MainMenu = () => {
                 variants={itemVariants}
             >
                 <div className="section-grid">
+                    <MenuCard to="/clock" icon="⏰" title="Uhren-Meister" color="var(--c-sky)" level={progress.clockLevel} />
                     <MenuCard to="/matching/antonyms" icon="🎭" title="Gegenteile" color="var(--c-violet)" />
                     <MenuCard to="/matching/synonyms" icon="📜" title="Synonyme" color="var(--c-sky)" />
                     <MenuCard to="/artikel" icon="👑" title="Artikel-König" color="var(--c-amber)" level={progress.artikelLevel} />
