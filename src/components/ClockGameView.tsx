@@ -743,6 +743,133 @@ const ClockGameView: React.FC = () => {
                         <circle cx="150" cy="150" r="144" fill="#ffffff" stroke={currentTheme.bezelColor} strokeWidth="4" />
                         <circle cx="150" cy="150" r="138" fill="url(#clockDialGrad)" stroke={currentTheme.dialBorder} strokeWidth="2.5" />
 
+                        {/* Subtle Left (VOR) and Right (NACH) Zone Halves (Authentic German Lernuhr) */}
+                        <path
+                            d="M 150 14 A 136 136 0 0 1 150 286 Z"
+                            fill={currentTheme.key === 'night' ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)'}
+                        />
+                        <path
+                            d="M 150 14 A 136 136 0 0 0 150 286 Z"
+                            fill={currentTheme.key === 'night' ? 'rgba(244, 63, 94, 0.08)' : 'rgba(244, 63, 94, 0.04)'}
+                        />
+
+                        {/* Center Dashed Dividing Axis Line */}
+                        <line
+                            x1="150"
+                            y1="22"
+                            x2="150"
+                            y2="278"
+                            stroke={currentTheme.key === 'night' ? '#475569' : '#cbd5e1'}
+                            strokeWidth="1"
+                            strokeDasharray="3 3"
+                            opacity="0.65"
+                        />
+
+                        {/* Educational Zone Labels: VOR (Left) & NACH (Right) */}
+                        {/* VOR Zone on Left */}
+                        <g transform="translate(68, 140)">
+                            <rect
+                                x="-4"
+                                y="-10"
+                                width="40"
+                                height="20"
+                                rx="6"
+                                fill={currentTheme.key === 'night' ? '#450a0a' : '#fee2e2'}
+                                stroke={currentTheme.key === 'night' ? '#ef4444' : '#fca5a5'}
+                                strokeWidth="1.2"
+                            />
+                            <text
+                                x="16"
+                                y="4.5"
+                                textAnchor="middle"
+                                fontSize="10.5"
+                                fontWeight="900"
+                                fontFamily="var(--font-main)"
+                                fill={currentTheme.key === 'night' ? '#fca5a5' : '#dc2626'}
+                                letterSpacing="0.6px"
+                            >
+                                VOR
+                            </text>
+                        </g>
+
+                        {/* NACH Zone on Right */}
+                        <g transform="translate(196, 140)">
+                            <rect
+                                x="-4"
+                                y="-10"
+                                width="44"
+                                height="20"
+                                rx="6"
+                                fill={currentTheme.key === 'night' ? '#172554' : '#dbeafe'}
+                                stroke={currentTheme.key === 'night' ? '#3b82f6' : '#93c5fd'}
+                                strokeWidth="1.2"
+                            />
+                            <text
+                                x="18"
+                                y="4.5"
+                                textAnchor="middle"
+                                fontSize="10.5"
+                                fontWeight="900"
+                                fontFamily="var(--font-main)"
+                                fill={currentTheme.key === 'night' ? '#93c5fd' : '#2563eb'}
+                                letterSpacing="0.6px"
+                            >
+                                NACH
+                            </text>
+                        </g>
+
+                        {/* Top Marker: UHR (at 12) */}
+                        <g transform="translate(150, 48)">
+                            <rect
+                                x="-17"
+                                y="-8"
+                                width="34"
+                                height="15"
+                                rx="4.5"
+                                fill={currentTheme.key === 'night' ? '#1e293b' : '#f1f5f9'}
+                                stroke={currentTheme.key === 'night' ? '#475569' : '#cbd5e1'}
+                                strokeWidth="1"
+                            />
+                            <text
+                                x="0"
+                                y="3"
+                                textAnchor="middle"
+                                fontSize="8.5"
+                                fontWeight="900"
+                                fontFamily="var(--font-main)"
+                                fill={currentTheme.key === 'night' ? '#cbd5e1' : '#475569'}
+                                letterSpacing="0.5px"
+                            >
+                                UHR
+                            </text>
+                        </g>
+
+                        {/* Bottom Marker: HALB (at 6) */}
+                        <g transform="translate(150, 252)">
+                            <rect
+                                x="-19"
+                                y="-8"
+                                width="38"
+                                height="15"
+                                rx="4.5"
+                                fill={currentTheme.key === 'night' ? '#451a03' : '#fef3c7'}
+                                stroke={currentTheme.key === 'night' ? '#d97706' : '#fcd34d'}
+                                strokeWidth="1"
+                            />
+                            <text
+                                x="0"
+                                y="3"
+                                textAnchor="middle"
+                                fontSize="8.5"
+                                fontWeight="900"
+                                fontFamily="var(--font-main)"
+                                fill={currentTheme.key === 'night' ? '#fde68a' : '#b45309'}
+                                letterSpacing="0.5px"
+                            >
+                                HALB
+                            </text>
+                        </g>
+
                         {/* Night Stars Background Effect if Night */}
                         {currentTheme.key === 'night' && (
                             <g opacity="0.6">
