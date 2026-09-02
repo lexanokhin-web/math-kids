@@ -137,10 +137,8 @@ const capitalizeWord = (str: string) => str ? str.charAt(0).toUpperCase() + str.
 
 export interface GermanTimeInfo {
     colloquialRule: string;    // "Viertel nach drei", "Fünf vor halb vier", "Halb vier", etc.
-    timeOfDayContext: string;  // "am Nachmittag ☀️"
-    timeOfDayDe: string;       // "nachmittags" / "am Nachmittag"
     formal24: string;          // "15:15 Uhr"
-    spokenText: string;        // Sentence for TTS
+    spokenText: string;        // Sentence for TTS (e.g. "Es ist Viertel nach drei.")
     displayPhrase: string;     // Combined phrase
 }
 
@@ -195,33 +193,16 @@ export const getSmartGermanTime = (hour24: number, minutes: number): GermanTimeI
         colloquialRule = `${capitalizeWord(diffWord)} vor ${nextHWord}`;
     }
 
-    let timeOfDayContext = '';
-    let timeOfDayDe = '';
-    if (hour24 >= 6 && hour24 < 12) {
-        timeOfDayContext = 'am Morgen 🌅';
-        timeOfDayDe = 'am Morgen';
-    } else if (hour24 >= 12 && hour24 < 18) {
-        timeOfDayContext = 'am Nachmittag ☀️';
-        timeOfDayDe = 'am Nachmittag';
-    } else if (hour24 >= 18 && hour24 < 22) {
-        timeOfDayContext = 'am Abend 🌇';
-        timeOfDayDe = 'am Abend';
-    } else {
-        timeOfDayContext = 'in der Nacht 🌙';
-        timeOfDayDe = 'in der Nacht';
-    }
-
     const formattedH = hour24 < 10 ? `0${hour24}` : `${hour24}`;
     const formattedM = minutes < 10 ? `0${minutes}` : `${minutes}`;
     const formal24 = `${formattedH}:${formattedM} Uhr`;
 
-    const spokenText = `Es ist ${colloquialRule} ${timeOfDayDe}.`;
-    const displayPhrase = `${colloquialRule} ${timeOfDayContext}`;
+    // Strictly speaks the time itself: "Es ist Viertel nach drei." / "Es ist halb vier."
+    const spokenText = `Es ist ${colloquialRule}.`;
+    const displayPhrase = colloquialRule;
 
     return {
         colloquialRule,
-        timeOfDayContext,
-        timeOfDayDe,
         formal24,
         spokenText,
         displayPhrase
@@ -1078,7 +1059,7 @@ const ClockGameView: React.FC = () => {
                             <span className="speaker-icon">{isSpeaking ? '🔊' : '🗣️'}</span>
                             <div className="phrase-text-group">
                                 <span className="phrase-colloquial">"{problem.germanTime.colloquialRule}"</span>
-                                <span className="phrase-detail">{problem.germanTime.formal24} • {problem.germanTime.timeOfDayDe}</span>
+                                <span className="phrase-detail">{problem.germanTime.formal24}</span>
                             </div>
                             <span className="repeat-icon">🔄</span>
                         </motion.div>
@@ -1179,7 +1160,6 @@ const ClockGameView: React.FC = () => {
                             >
                                 <span className="choice-digital">{opt}</span>
                                 <span className="choice-phrase">{optGerman.colloquialRule}</span>
-                                <span className="choice-subphrase">{optGerman.timeOfDayDe}</span>
                             </motion.button>
                         );
                     })}
