@@ -688,23 +688,9 @@ const ClockGameView: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="sky-banner-actions">
-                    {/* Audio Listen Button */}
-                    <button
-                        type="button"
-                        className={`audio-listen-btn ${isSpeaking ? 'speaking-active' : ''}`}
-                        onClick={() => playVoicePronunciation()}
-                        title="Uhrzeit auf Deutsch anhören 🗣️"
-                        aria-label="Aussprache anhören"
-                    >
-                        <span className="audio-icon">{isSpeaking ? '🔊' : '🔈'}</span>
-                        <span className="audio-btn-text">Anhören</span>
-                    </button>
-
-                    {is24Hour && problem.hour24 >= 12 && (
-                        <span className="badge-24h-indicator">24h</span>
-                    )}
-                </div>
+                {is24Hour && problem.hour24 >= 12 && (
+                    <span className="badge-24h-indicator">24h</span>
+                )}
             </motion.div>
 
             {/* Dynamic Analog Clock Card */}
@@ -720,19 +706,9 @@ const ClockGameView: React.FC = () => {
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             >
                 <div className="clock-title-bar">
-                    <div className="clock-title-row">
-                        <h3 style={{ color: currentTheme.numberColor }}>
-                            Wie spät ist es? {currentTheme.icon}
-                        </h3>
-                        <button
-                            type="button"
-                            className={`mini-speak-btn ${isSpeaking ? 'active' : ''}`}
-                            onClick={() => playVoicePronunciation()}
-                            title="Aussprache anhören"
-                        >
-                            {isSpeaking ? '🔊' : '🔈'}
-                        </button>
-                    </div>
+                    <h3 style={{ color: currentTheme.numberColor }}>
+                        Wie spät ist es? {currentTheme.icon}
+                    </h3>
                     <p className="clock-hint-sub" style={{ color: currentTheme.subtextColor }}>
                         Schau auf die Zeiger und bestimme die Uhrzeit
                     </p>
