@@ -707,79 +707,70 @@ const ClockGameView: React.FC = () => {
                     </p>
                 </div>
 
-                {/* Clock Outer Wrapper with Outside VOR / NACH Side Badges */}
-                <div className="clock-outer-wrapper">
-                    {/* Left Outside Badge: VOR */}
-                    <div className="clock-side-badge vor-badge" title="Minuten VOR der vollen Stunde">
-                        <span className="side-badge-arrow">←</span>
-                        <span className="side-badge-text">VOR</span>
-                        <span className="side-badge-sub">35 = nach halb</span>
-                    </div>
+                {/* SVG Analog Clock with Daytime Colors */}
+                <div className="clock-svg-wrapper">
+                    <svg viewBox="0 0 300 300" className="analog-clock-svg" aria-label="Analoge Uhr">
+                        <defs>
+                            <radialGradient id="clockDialGrad" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stopColor={currentTheme.dialGradient[0]} />
+                                <stop offset="100%" stopColor={currentTheme.dialGradient[1]} />
+                            </radialGradient>
+                            <filter id="handShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="1" dy="3" stdDeviation="3" floodOpacity="0.25" />
+                            </filter>
+                        </defs>
 
-                    {/* SVG Analog Clock with Daytime Colors */}
-                    <div className="clock-svg-wrapper">
-                        <svg viewBox="0 0 300 300" className="analog-clock-svg" aria-label="Analoge Uhr">
-                            <defs>
-                                <radialGradient id="clockDialGrad" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stopColor={currentTheme.dialGradient[0]} />
-                                    <stop offset="100%" stopColor={currentTheme.dialGradient[1]} />
-                                </radialGradient>
-                                <filter id="handShadow" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feDropShadow dx="1" dy="3" stdDeviation="3" floodOpacity="0.25" />
-                                </filter>
-                            </defs>
+                        {/* Outer Bezel (Adapts to daytime theme) */}
+                        <circle cx="150" cy="150" r="144" fill="#ffffff" stroke={currentTheme.bezelColor} strokeWidth="4" />
+                        <circle cx="150" cy="150" r="138" fill="url(#clockDialGrad)" stroke={currentTheme.dialBorder} strokeWidth="2.5" />
 
-                            {/* Outer Bezel (Adapts to daytime theme) */}
-                            <circle cx="150" cy="150" r="144" fill="#ffffff" stroke={currentTheme.bezelColor} strokeWidth="4" />
-                            <circle cx="150" cy="150" r="138" fill="url(#clockDialGrad)" stroke={currentTheme.dialBorder} strokeWidth="2.5" />
+                        {/* Subtle Left (VOR) and Right (NACH) Zone Halves (Authentic German Lernuhr) */}
+                        <path
+                            d="M 150 14 A 136 136 0 0 1 150 286 Z"
+                            fill={currentTheme.key === 'night' ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)'}
+                        />
+                        <path
+                            d="M 150 14 A 136 136 0 0 0 150 286 Z"
+                            fill={currentTheme.key === 'night' ? 'rgba(244, 63, 94, 0.08)' : 'rgba(244, 63, 94, 0.04)'}
+                        />
 
-                            {/* Subtle Left (VOR) and Right (NACH) Zone Halves (Authentic German Lernuhr) */}
-                            <path
-                                d="M 150 14 A 136 136 0 0 1 150 286 Z"
-                                fill={currentTheme.key === 'night' ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)'}
-                            />
-                            <path
-                                d="M 150 14 A 136 136 0 0 0 150 286 Z"
-                                fill={currentTheme.key === 'night' ? 'rgba(244, 63, 94, 0.08)' : 'rgba(244, 63, 94, 0.04)'}
-                            />
+                        {/* Center Dashed Dividing Axis Line */}
+                        <line
+                            x1="150"
+                            y1="22"
+                            x2="150"
+                            y2="278"
+                            stroke={currentTheme.key === 'night' ? '#475569' : '#cbd5e1'}
+                            strokeWidth="1"
+                            strokeDasharray="3 3"
+                            opacity="0.65"
+                        />
 
-                            {/* Center Dashed Dividing Axis Line */}
-                            <line
-                                x1="150"
-                                y1="22"
-                                x2="150"
-                                y2="278"
+                        {/* Top Marker: UHR (at 12) */}
+                        <g transform="translate(150, 48)">
+                            <rect
+                                x="-17"
+                                y="-8"
+                                width="34"
+                                height="15"
+                                rx="4.5"
+                                fill={currentTheme.key === 'night' ? '#1e293b' : '#f1f5f9'}
                                 stroke={currentTheme.key === 'night' ? '#475569' : '#cbd5e1'}
                                 strokeWidth="1"
-                                strokeDasharray="3 3"
-                                opacity="0.65"
                             />
-
-                            {/* Top Marker: UHR (at 12) */}
-                            <g transform="translate(150, 48)">
-                                <rect
-                                    x="-17"
-                                    y="-8"
-                                    width="34"
-                                    height="15"
-                                    rx="4.5"
-                                    fill={currentTheme.key === 'night' ? '#1e293b' : '#f1f5f9'}
-                                    stroke={currentTheme.key === 'night' ? '#475569' : '#cbd5e1'}
-                                    strokeWidth="1"
-                                />
-                                <text
-                                    x="0"
-                                    y="3"
-                                    textAnchor="middle"
-                                    fontSize="8.5"
-                                    fontWeight="900"
-                                    fontFamily="var(--font-main)"
-                                    fill={currentTheme.key === 'night' ? '#cbd5e1' : '#475569'}
-                                    letterSpacing="0.5px"
-                                >
-                                    UHR
-                                </text>
-                            </g>
+                            <text
+                                x="0"
+                                y="3"
+                                textAnchor="middle"
+                                fontSize="8.5"
+                                fontWeight="900"
+                                fontFamily="var(--font-main)"
+                                fill={currentTheme.key === 'night' ? '#cbd5e1' : '#475569'}
+                                letterSpacing="0.5px"
+                            >
+                                UHR
+                            </text>
+                        </g>
 
                         {/* Bottom Marker: HALB (at 6) */}
                         <g transform="translate(150, 252)">
@@ -818,18 +809,18 @@ const ClockGameView: React.FC = () => {
                             </g>
                         )}
 
-                        {/* Outer Minute Hints (00, 05, 10, 15, ... 55) */}
+                        {/* Outer Minute Hints with compact German VOR/NACH tags */}
                         {[
                             { n: 12, text: '00' },
                             { n: 1, text: '05' },
                             { n: 2, text: '10' },
-                            { n: 3, text: '15', sub: 'Viertel' },
+                            { n: 3, text: '15', sub: 'nach', subW: 28, isSpecial: true, specialType: 'nach', subDy: 14 },
                             { n: 4, text: '20' },
-                            { n: 5, text: '25', sub: 'vor halb', isSpecial: true, specialType: 'vor' },
+                            { n: 5, text: '25', sub: 'vor halb', subW: 46, isSpecial: true, specialType: 'vor', subDy: 14 },
                             { n: 6, text: '30' },
-                            { n: 7, text: '35', sub: 'nach halb', isSpecial: true, specialType: 'nach' },
+                            { n: 7, text: '35', sub: 'nach halb', subW: 50, isSpecial: true, specialType: 'nach', subDy: 14 },
                             { n: 8, text: '40' },
-                            { n: 9, text: '45', sub: 'Viertel' },
+                            { n: 9, text: '45', sub: 'vor', subW: 25, isSpecial: true, specialType: 'vor', subDy: 14 },
                             { n: 10, text: '50' },
                             { n: 11, text: '55' }
                         ].map(m => {
@@ -856,6 +847,8 @@ const ClockGameView: React.FC = () => {
                                     : (currentTheme.key === 'night' ? '#93c5fd' : '#2563eb'))
                                 : (currentTheme.key === 'night' ? '#93c5fd' : '#1d4ed8');
 
+                            const subWidth = m.subW || 34;
+
                             return (
                                 <g key={`min-badge-${m.n}`}>
                                     <rect
@@ -880,13 +873,13 @@ const ClockGameView: React.FC = () => {
                                         {m.text}
                                     </text>
 
-                                    {/* Sub-label for 25 (vor halb) and 35 (nach halb) */}
-                                    {m.sub && m.isSpecial && (
+                                    {/* Compact sub-labels (nach at 15, vor at 45, vor halb at 25, nach halb at 35) */}
+                                    {m.sub && (
                                         <g>
                                             <rect
-                                                x={x - (m.specialType === 'vor' ? 22 : 24)}
-                                                y={y + (m.n === 5 || m.n === 7 ? 10 : -18)}
-                                                width={m.specialType === 'vor' ? 44 : 48}
+                                                x={x - subWidth / 2}
+                                                y={y + (m.subDy || 13) - 5.5}
+                                                width={subWidth}
                                                 height={11}
                                                 rx={3.5}
                                                 fill={badgeFill}
@@ -895,7 +888,7 @@ const ClockGameView: React.FC = () => {
                                             />
                                             <text
                                                 x={x}
-                                                y={y + (m.n === 5 || m.n === 7 ? 18 : -10)}
+                                                y={y + (m.subDy || 13) + 2.5}
                                                 textAnchor="middle"
                                                 fontSize="6.8"
                                                 fontWeight="900"
@@ -1046,14 +1039,6 @@ const ClockGameView: React.FC = () => {
                         <circle cx="150" cy="150" r="4" fill="#b45309" />
                     </svg>
                 </div>
-
-                {/* Right Outside Badge: NACH */}
-                <div className="clock-side-badge nach-badge" title="Minuten NACH der vollen Stunde">
-                    <span className="side-badge-text">NACH</span>
-                    <span className="side-badge-arrow">→</span>
-                    <span className="side-badge-sub">25 = vor halb</span>
-                </div>
-            </div>
 
                 {/* German Phrase Bubble on Correct Answer with Audio Button */}
                 <AnimatePresence>

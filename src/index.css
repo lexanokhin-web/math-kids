@@ -2335,8 +2335,8 @@ body {
 }
 
 .clock-svg-wrapper {
-  width: 250px;
-  height: 250px;
+  width: 290px;
+  height: 290px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2649,7 +2649,7 @@ body {
 
   .clock-card {
     padding: 4px 6px !important;
-    border-radius: 18px !important;
+    border-radius: 20px !important;
     gap: 2px !important;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
   }
@@ -2658,38 +2658,11 @@ body {
     display: none !important;
   }
 
-  .clock-outer-wrapper {
-    gap: 3px !important;
-    width: 100% !important;
-  }
-
-  .clock-side-badge {
-    padding: 4px 4px !important;
-    border-radius: 8px !important;
-    border-width: 1px !important;
-    box-shadow: none !important;
-  }
-
-  .side-badge-arrow {
-    font-size: 0.85rem !important;
-  }
-
-  .side-badge-text {
-    font-size: 0.6rem !important;
-    font-weight: 900 !important;
-  }
-
-  .side-badge-sub {
-    font-size: 0.5rem !important;
-    padding: 1px 3px !important;
-    margin-top: 2px !important;
-  }
-
   .clock-svg-wrapper {
-    width: 255px !important;
-    height: 255px !important;
-    max-width: 78vw !important;
-    max-height: min(260px, 36vh) !important;
+    width: 280px !important;
+    height: 280px !important;
+    max-width: 88vw !important;
+    max-height: min(285px, 39vh) !important;
   }
 
   .clock-hand-legend {
