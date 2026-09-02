@@ -713,6 +713,7 @@ const ClockGameView: React.FC = () => {
                     <div className="clock-side-badge vor-badge" title="Minuten VOR der vollen Stunde">
                         <span className="side-badge-arrow">←</span>
                         <span className="side-badge-text">VOR</span>
+                        <span className="side-badge-sub">35 = nach halb</span>
                     </div>
 
                     {/* SVG Analog Clock with Daytime Colors */}
@@ -822,13 +823,13 @@ const ClockGameView: React.FC = () => {
                             { n: 12, text: '00' },
                             { n: 1, text: '05' },
                             { n: 2, text: '10' },
-                            { n: 3, text: '15' },
+                            { n: 3, text: '15', sub: 'Viertel' },
                             { n: 4, text: '20' },
-                            { n: 5, text: '25' },
+                            { n: 5, text: '25', sub: 'vor halb', isSpecial: true, specialType: 'vor' },
                             { n: 6, text: '30' },
-                            { n: 7, text: '35' },
+                            { n: 7, text: '35', sub: 'nach halb', isSpecial: true, specialType: 'nach' },
                             { n: 8, text: '40' },
-                            { n: 9, text: '45' },
+                            { n: 9, text: '45', sub: 'Viertel' },
                             { n: 10, text: '50' },
                             { n: 11, text: '55' }
                         ].map(m => {
@@ -836,6 +837,24 @@ const ClockGameView: React.FC = () => {
                             const r = 125;
                             const x = 150 + r * Math.sin(angle);
                             const y = 150 - r * Math.cos(angle);
+
+                            const badgeFill = m.isSpecial
+                                ? (m.specialType === 'vor'
+                                    ? (currentTheme.key === 'night' ? '#450a0a' : '#fee2e2')
+                                    : (currentTheme.key === 'night' ? '#172554' : '#dbeafe'))
+                                : (currentTheme.key === 'night' ? '#1e1b4b' : '#eff6ff');
+
+                            const badgeStroke = m.isSpecial
+                                ? (m.specialType === 'vor'
+                                    ? (currentTheme.key === 'night' ? '#ef4444' : '#f87171')
+                                    : (currentTheme.key === 'night' ? '#3b82f6' : '#60a5fa'))
+                                : (currentTheme.key === 'night' ? '#6366f1' : '#93c5fd');
+
+                            const textColor = m.isSpecial
+                                ? (m.specialType === 'vor'
+                                    ? (currentTheme.key === 'night' ? '#fca5a5' : '#dc2626')
+                                    : (currentTheme.key === 'night' ? '#93c5fd' : '#2563eb'))
+                                : (currentTheme.key === 'night' ? '#93c5fd' : '#1d4ed8');
 
                             return (
                                 <g key={`min-badge-${m.n}`}>
@@ -845,9 +864,9 @@ const ClockGameView: React.FC = () => {
                                         width={24}
                                         height={16}
                                         rx={5}
-                                        fill={currentTheme.key === 'night' ? '#1e1b4b' : '#eff6ff'}
-                                        stroke={currentTheme.key === 'night' ? '#6366f1' : '#93c5fd'}
-                                        strokeWidth={1.2}
+                                        fill={badgeFill}
+                                        stroke={badgeStroke}
+                                        strokeWidth={m.isSpecial ? 1.6 : 1.2}
                                     />
                                     <text
                                         x={x}
@@ -856,10 +875,38 @@ const ClockGameView: React.FC = () => {
                                         fontSize="10"
                                         fontWeight="900"
                                         fontFamily="var(--font-main)"
-                                        fill={currentTheme.key === 'night' ? '#93c5fd' : '#1d4ed8'}
+                                        fill={textColor}
                                     >
                                         {m.text}
                                     </text>
+
+                                    {/* Sub-label for 25 (vor halb) and 35 (nach halb) */}
+                                    {m.sub && m.isSpecial && (
+                                        <g>
+                                            <rect
+                                                x={x - (m.specialType === 'vor' ? 22 : 24)}
+                                                y={y + (m.n === 5 || m.n === 7 ? 10 : -18)}
+                                                width={m.specialType === 'vor' ? 44 : 48}
+                                                height={11}
+                                                rx={3.5}
+                                                fill={badgeFill}
+                                                stroke={badgeStroke}
+                                                strokeWidth={0.8}
+                                            />
+                                            <text
+                                                x={x}
+                                                y={y + (m.n === 5 || m.n === 7 ? 18 : -10)}
+                                                textAnchor="middle"
+                                                fontSize="6.8"
+                                                fontWeight="900"
+                                                fontFamily="var(--font-main)"
+                                                fill={textColor}
+                                                letterSpacing="0.2px"
+                                            >
+                                                {m.sub}
+                                            </text>
+                                        </g>
+                                    )}
                                 </g>
                             );
                         })}
@@ -1004,6 +1051,7 @@ const ClockGameView: React.FC = () => {
                 <div className="clock-side-badge nach-badge" title="Minuten NACH der vollen Stunde">
                     <span className="side-badge-text">NACH</span>
                     <span className="side-badge-arrow">→</span>
+                    <span className="side-badge-sub">25 = vor halb</span>
                 </div>
             </div>
 
@@ -1184,6 +1232,14 @@ const ClockGameView: React.FC = () => {
                                     <div className="info-row-text">
                                         <strong>Blauer Zeiger (Minute):</strong>
                                         <p>Zeigt die <b>Minute</b> (0 bis 59 auf den blauen Feldern).</p>
+                                    </div>
+                                </div>
+
+                                <div className="info-chip-row">
+                                    <span className="legend-dot green" style={{ background: '#10b981' }} />
+                                    <div className="info-row-text">
+                                        <strong>Deutsche Besonderheit (Halb):</strong>
+                                        <p>• <b>25 min</b> = 5 vor halb ⏳<br />• <b>30 min</b> = halb ⚡<br />• <b>35 min</b> = 5 nach halb ⏳</p>
                                     </div>
                                 </div>
 
