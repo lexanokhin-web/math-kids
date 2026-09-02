@@ -2590,14 +2590,14 @@ body {
   }
 
   .clock-card {
-    padding: 8px 10px !important;
+    padding: 6px 10px !important;
     border-radius: 18px !important;
     gap: 4px !important;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
   }
 
   .clock-title-bar h3 {
-    font-size: 1rem !important;
+    font-size: 1.05rem !important;
   }
 
   .clock-hint-sub {
@@ -2605,8 +2605,9 @@ body {
   }
 
   .clock-svg-wrapper {
-    width: 175px !important;
-    height: 175px !important;
+    width: 225px !important;
+    height: 225px !important;
+    max-width: 82vw !important;
   }
 
   .clock-hand-legend {
