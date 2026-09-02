@@ -1926,6 +1926,86 @@ body {
   color: #64748b;
 }
 
+/* 24h Format Switcher */
+.clock-format-toggle {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  font-family: var(--font-main);
+  color: #475569;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.clock-format-toggle.active {
+  background: #6366f1;
+  color: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+/* Daytime Sky Banner */
+.daytime-sky-banner {
+  width: 100%;
+  max-width: 440px;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.4s ease;
+}
+
+.sky-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sky-icon-large {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+.sky-text-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.sky-label-de {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.sky-label-ru {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.badge-24h-indicator {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.85);
+  color: #1e293b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.legend-dot.amber {
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
 .clock-progress-bar-container {
   width: 100%;
   max-width: 440px;
