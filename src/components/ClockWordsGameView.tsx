@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -6,263 +6,37 @@ import { trackGeneralGame, loadProgress, setGameLevel } from '../utils/progressM
 import { soundManager } from '../utils/soundManager';
 import RewardCelebration, { type Reward } from './RewardCelebration';
 import LevelSelectionOverlay from './LevelSelectionOverlay';
+import {
+    getTimeTheme,
+    getSmartGermanTime,
+    speakGermanTime,
+    type TimeTheme,
+    type GermanTimeInfo
+} from './ClockGameView';
 
-export type TimeOfDay = 'morning' | 'day' | 'evening' | 'night';
-
-export interface TimeTheme {
-    key: TimeOfDay;
-    nameDe: string;
-    nameRu: string;
-    icon: string;
-    skyGradient: string;
-    dialGradient: [string, string];
-    dialBorder: string;
-    bezelColor: string;
-    cardBg: string;
-    accentColor: string;
-    badgeBg: string;
-    badgeTextColor: string;
-    numberColor: string;
-    subtextColor: string;
+export interface ClockWordsOption {
+    phrase: string;
+    isCorrect: boolean;
+    digitalHint?: string;
 }
 
-export const getTimeTheme = (hour24: number): TimeTheme => {
-    if (hour24 >= 6 && hour24 < 12) {
-        // Morning (06:00 - 11:59) - Sunrise warmth
-        return {
-            key: 'morning',
-            nameDe: 'Morgen',
-            nameRu: 'Утро',
-            icon: '🌅',
-            skyGradient: 'linear-gradient(135deg, #fef08a 0%, #fed7aa 50%, #bae6fd 100%)',
-            dialGradient: ['#ffffff', '#fef9c3'],
-            dialBorder: '#facc15',
-            bezelColor: '#f59e0b',
-            cardBg: 'linear-gradient(145deg, rgba(254, 249, 195, 0.9), rgba(254, 215, 170, 0.85))',
-            accentColor: '#d97706',
-            badgeBg: '#fef3c7',
-            badgeTextColor: '#92400e',
-            numberColor: '#1e293b',
-            subtextColor: '#78350f'
-        };
-    } else if (hour24 >= 12 && hour24 < 18) {
-        // Day / Afternoon (12:00 - 17:59) - Bright sky cyan
-        return {
-            key: 'day',
-            nameDe: 'Nachmittag',
-            nameRu: 'День',
-            icon: '☀️',
-            skyGradient: 'linear-gradient(135deg, #38bdf8 0%, #7dd3fc 50%, #fef08a 100%)',
-            dialGradient: ['#ffffff', '#f0f9ff'],
-            dialBorder: '#38bdf8',
-            bezelColor: '#0284c7',
-            cardBg: 'linear-gradient(145deg, rgba(240, 249, 255, 0.95), rgba(224, 242, 254, 0.9))',
-            accentColor: '#0284c7',
-            badgeBg: '#e0f2fe',
-            badgeTextColor: '#0369a1',
-            numberColor: '#0f172a',
-            subtextColor: '#0369a1'
-        };
-    } else if (hour24 >= 18 && hour24 < 22) {
-        // Evening / Sunset (18:00 - 21:59) - Sunset pink & purple
-        return {
-            key: 'evening',
-            nameDe: 'Abend',
-            nameRu: 'Вечер',
-            icon: '🌇',
-            skyGradient: 'linear-gradient(135deg, #f43f5e 0%, #c084fc 60%, #6366f1 100%)',
-            dialGradient: ['#fff1f2', '#fdf4ff'],
-            dialBorder: '#ec4899',
-            bezelColor: '#d946ef',
-            cardBg: 'linear-gradient(145deg, rgba(253, 232, 242, 0.95), rgba(245, 208, 254, 0.9))',
-            accentColor: '#c026d3',
-            badgeBg: '#fce7f3',
-            badgeTextColor: '#9d174d',
-            numberColor: '#1e293b',
-            subtextColor: '#831843'
-        };
-    } else {
-        // Night (22:00 - 05:59) - Deep starry midnight
-        return {
-            key: 'night',
-            nameDe: 'Nacht',
-            nameRu: 'Ночь',
-            icon: '🌙',
-            skyGradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%)',
-            dialGradient: ['#1e293b', '#0f172a'],
-            dialBorder: '#6366f1',
-            bezelColor: '#4338ca',
-            cardBg: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 75, 0.95))',
-            accentColor: '#818cf8',
-            badgeBg: '#312e81',
-            badgeTextColor: '#e0e7ff',
-            numberColor: '#f8fafc',
-            subtextColor: '#c7d2fe'
-        };
-    }
-};
-
-const GERMAN_NUM_WORDS: Record<number, string> = {
-    0: 'null',
-    1: 'eins',
-    2: 'zwei',
-    3: 'drei',
-    4: 'vier',
-    5: 'fünf',
-    6: 'sechs',
-    7: 'sieben',
-    8: 'acht',
-    9: 'neun',
-    10: 'zehn',
-    11: 'elf',
-    12: 'zwölf',
-    13: 'dreizehn',
-    14: 'vierzehn',
-    15: 'fünfzehn',
-    16: 'sechzehn',
-    17: 'siebzehn',
-    18: 'achtzehn',
-    19: 'neunzehn',
-    20: 'zwanzig',
-    25: 'fünfundzwanzig',
-    30: 'dreißig',
-    35: 'fünfunddreißig',
-    40: 'vierzig',
-    45: 'fünfundvierzig',
-    50: 'fünfzig',
-    55: 'fünfundfünfzig'
-};
-
-const capitalizeWord = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-
-export interface GermanTimeInfo {
-    colloquialRule: string;    // "Viertel nach drei", "Fünf vor halb vier", "Halb vier", etc.
-    formal24: string;          // "15:15 Uhr"
-    spokenText: string;        // Sentence for TTS (e.g. "Es ist Viertel nach drei.")
-    displayPhrase: string;     // Combined phrase
-}
-
-export const getSmartGermanTime = (hour24: number, minutes: number): GermanTimeInfo => {
-    const h12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
-    const nextH12 = (h12 % 12) + 1;
-
-    const hWord = h12 === 1 ? 'eins' : (GERMAN_NUM_WORDS[h12] || String(h12));
-    const nextHWord = nextH12 === 1 ? 'eins' : (GERMAN_NUM_WORDS[nextH12] || String(nextH12));
-    const hUhrWord = h12 === 1 ? 'ein' : (GERMAN_NUM_WORDS[h12] || String(h12));
-
-    let colloquialRule = '';
-
-    if (minutes === 0) {
-        colloquialRule = `${capitalizeWord(hUhrWord)} Uhr`;
-    } else if (minutes === 5) {
-        colloquialRule = `Fünf nach ${hWord}`;
-    } else if (minutes === 10) {
-        colloquialRule = `Zehn nach ${hWord}`;
-    } else if (minutes === 15) {
-        colloquialRule = `Viertel nach ${hWord}`;
-    } else if (minutes === 20) {
-        colloquialRule = `Zwanzig nach ${hWord}`;
-    } else if (minutes === 25) {
-        colloquialRule = `Fünf vor halb ${nextHWord}`;
-    } else if (minutes === 30) {
-        colloquialRule = `Halb ${nextHWord}`;
-    } else if (minutes === 35) {
-        colloquialRule = `Fünf nach halb ${nextHWord}`;
-    } else if (minutes === 40) {
-        colloquialRule = `Zwanzig vor ${nextHWord}`;
-    } else if (minutes === 45) {
-        colloquialRule = `Viertel vor ${nextHWord}`;
-    } else if (minutes === 50) {
-        colloquialRule = `Zehn vor ${nextHWord}`;
-    } else if (minutes === 55) {
-        colloquialRule = `Fünf vor ${nextHWord}`;
-    } else if (minutes < 25) {
-        const mWord = GERMAN_NUM_WORDS[minutes] || String(minutes);
-        colloquialRule = `${capitalizeWord(mWord)} nach ${hWord}`;
-    } else if (minutes < 30) {
-        const diff = 30 - minutes;
-        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
-        colloquialRule = `${capitalizeWord(diffWord)} vor halb ${nextHWord}`;
-    } else if (minutes < 35) {
-        const diff = minutes - 30;
-        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
-        colloquialRule = `${capitalizeWord(diffWord)} nach halb ${nextHWord}`;
-    } else {
-        const diff = 60 - minutes;
-        const diffWord = GERMAN_NUM_WORDS[diff] || String(diff);
-        colloquialRule = `${capitalizeWord(diffWord)} vor ${nextHWord}`;
-    }
-
-    const formattedH = hour24 < 10 ? `0${hour24}` : `${hour24}`;
-    const formattedM = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const formal24 = `${formattedH}:${formattedM} Uhr`;
-
-    // Strictly speaks the time itself: "Es ist Viertel nach drei." / "Es ist halb vier."
-    const spokenText = `Es ist ${colloquialRule}.`;
-    const displayPhrase = colloquialRule;
-
-    return {
-        colloquialRule,
-        formal24,
-        spokenText,
-        displayPhrase
-    };
-};
-
-// Text-to-speech for German with optimal voice selection
-export const speakGermanTime = (text: string): Promise<void> => {
-    return new Promise((resolve) => {
-        if (!('speechSynthesis' in window)) {
-            resolve();
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'de-DE';
-        utterance.rate = 0.82; // Clear educational pace
-        utterance.pitch = 1.05; // Cheerful friendly pitch
-
-        const voices = window.speechSynthesis.getVoices();
-        const deVoices = voices.filter(v => v.lang.startsWith('de') || v.lang === 'de_DE');
-        const bestVoice = deVoices.find(v =>
-            v.name.includes('Google') ||
-            v.name.includes('Natural') ||
-            v.name.includes('Anna') ||
-            v.name.includes('Katja') ||
-            v.name.includes('Marlene') ||
-            v.name.includes('Petra')
-        ) || deVoices[0];
-
-        if (bestVoice) {
-            utterance.voice = bestVoice;
-        }
-
-        utterance.onend = () => resolve();
-        utterance.onerror = () => resolve();
-
-        window.speechSynthesis.speak(utterance);
-    });
-};
-
-interface ClockProblem {
-    hour24: number;      // 0 to 23
-    hour12: number;      // 1 to 12
-    minute: number;      // 0 to 59
-    targetDigital: string; // "15:30"
+export interface ClockWordsProblem {
+    hour24: number;
+    hour12: number;
+    minute: number;
+    targetDigital: string;
     germanTime: GermanTimeInfo;
-    options: string[];
+    options: ClockWordsOption[];
     theme: TimeTheme;
 }
 
-const formatTime = (h: number, m: number): string => {
+const formatTimeDigits = (h: number, m: number): string => {
     const formattedH = h < 10 ? `0${h}` : `${h}`;
     const formattedM = m < 10 ? `0${m}` : `${m}`;
     return `${formattedH}:${formattedM}`;
 };
 
-const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem => {
+export const generateClockWordsProblem = (level: number, use24Hour: boolean): ClockWordsProblem => {
     let hour24: number;
     if (use24Hour) {
         hour24 = Math.floor(Math.random() * 24);
@@ -281,55 +55,117 @@ const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem =
         // Level 2: Leichte Minuten (15, 30, 45 Min & :00)
         candidateMinutes = [0, 15, 30, 45];
     } else {
-        // Level 3: Alle 5-Minuten Schritte (5 vor halb, 5 nach halb, etc.)
+        // Level 3: Alle 5-Minuten Schritte (5 vor halb, 5 nach halb, 10 nach, 20 vor, etc.)
         candidateMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
     }
 
     minute = candidateMinutes[Math.floor(Math.random() * candidateMinutes.length)];
 
-    const targetDigital = formatTime(hour24, minute);
+    const targetDigital = formatTimeDigits(hour24, minute);
     const germanTime = getSmartGermanTime(hour24, minute);
     const theme = getTimeTheme(hour24);
 
-    // Generate 3 plausible wrong options
-    const wrongOptions = new Set<string>();
-    while (wrongOptions.size < 3) {
-        let wrongH = hour24;
-        let wrongM = minute;
+    const correctPhrase = germanTime.colloquialRule;
 
-        const variation = Math.floor(Math.random() * 4);
-        if (variation === 0) {
-            // Shift 12h (day vs night confusion, e.g. 14:00 vs 02:00)
-            if (use24Hour) {
-                wrongH = (hour24 + 12) % 24;
-            } else {
-                wrongH = ((hour24 + (Math.random() > 0.5 ? 1 : 11) - 1) % 12) + 1;
-            }
-        } else if (variation === 1) {
-            // Shift 1 hour
-            const maxH = use24Hour ? 24 : 12;
-            const deltaH = Math.random() > 0.5 ? 1 : -1;
-            wrongH = (hour24 + deltaH + maxH) % maxH;
-            if (!use24Hour && wrongH === 0) wrongH = 12;
-        } else if (variation === 2) {
-            // Half hour or 15m shift
-            wrongM = (minute + (Math.random() > 0.5 ? 30 : 15)) % 60;
+    // Generate 3 plausible distinct distractor phrases
+    const usedPhrases = new Set<string>();
+    usedPhrases.add(correctPhrase);
+
+    const distractorOptions: ClockWordsOption[] = [];
+
+    // Strategy 1: Targeted distractors based on level
+    let attempts = 0;
+    while (distractorOptions.length < 3 && attempts < 60) {
+        attempts++;
+        let candidateH = hour24;
+        let candidateM = minute;
+
+        if (level === 1) {
+            // Level 1: Strictly different full hours (:00)
+            const hourOffset = (attempts % 11) + 1;
+            candidateH = (hour24 + (attempts % 2 === 0 ? hourOffset : -hourOffset) + 24) % 24;
+            candidateM = 0;
         } else {
-            // Shift 5 or 10 min
-            const delta = (Math.floor(Math.random() * 3) + 1) * 5;
-            wrongM = (minute + (Math.random() > 0.5 ? delta : 60 - delta)) % 60;
+            const variationType = Math.floor(Math.random() * 4);
+            if (variationType === 0) {
+                // Hour shift (+1 or -1) with same minute
+                const delta = Math.random() > 0.5 ? 1 : -1;
+                candidateH = (hour24 + delta + 24) % 24;
+            } else if (variationType === 1) {
+                // Minute shift within the level's allowed pool
+                const otherMinutes = candidateMinutes.filter(m => m !== minute);
+                if (otherMinutes.length > 0) {
+                    candidateM = otherMinutes[Math.floor(Math.random() * otherMinutes.length)];
+                }
+            } else if (variationType === 2) {
+                // Opposite quarter or 5-min half shift
+                if (minute === 15) candidateM = 45;
+                else if (minute === 45) candidateM = 15;
+                else if (minute === 25) candidateM = 35;
+                else if (minute === 35) candidateM = 25;
+                else if (minute === 0) candidateM = 30;
+                else if (minute === 30) candidateM = 0;
+                else {
+                    const otherMinutes = candidateMinutes.filter(m => m !== minute);
+                    candidateM = otherMinutes[Math.floor(Math.random() * otherMinutes.length)];
+                }
+            } else {
+                // Random time within level pool
+                candidateH = Math.floor(Math.random() * 24);
+                candidateM = candidateMinutes[Math.floor(Math.random() * candidateMinutes.length)];
+            }
         }
 
-        const optStr = formatTime(wrongH, wrongM);
-        if (optStr !== targetDigital) {
-            wrongOptions.add(optStr);
+        const candidateGerman = getSmartGermanTime(candidateH, candidateM);
+        const phraseStr = candidateGerman.colloquialRule;
+
+        if (!usedPhrases.has(phraseStr)) {
+            usedPhrases.add(phraseStr);
+            distractorOptions.push({
+                phrase: phraseStr,
+                isCorrect: false,
+                digitalHint: formatTimeDigits(candidateH, candidateM)
+            });
         }
     }
 
-    const options = [...Array.from(wrongOptions), targetDigital];
-    for (let i = options.length - 1; i > 0; i--) {
+    // Fallback if needed
+    while (distractorOptions.length < 3) {
+        const randH = (hour24 + distractorOptions.length + 1) % 24;
+        const randM = candidateMinutes[(distractorOptions.length * 2) % candidateMinutes.length];
+        const candidateGerman = getSmartGermanTime(randH, randM);
+        const phraseStr = candidateGerman.colloquialRule;
+
+        if (!usedPhrases.has(phraseStr)) {
+            usedPhrases.add(phraseStr);
+            distractorOptions.push({
+                phrase: phraseStr,
+                isCorrect: false,
+                digitalHint: formatTimeDigits(randH, randM)
+            });
+        } else {
+            const safeH = (randH + 3) % 24;
+            const safeGerman = getSmartGermanTime(safeH, randM);
+            distractorOptions.push({
+                phrase: safeGerman.colloquialRule,
+                isCorrect: false
+            });
+        }
+    }
+
+    // Combine correct option and distractors, then shuffle
+    const allOptions: ClockWordsOption[] = [
+        {
+            phrase: correctPhrase,
+            isCorrect: true,
+            digitalHint: targetDigital
+        },
+        ...distractorOptions
+    ];
+
+    for (let i = allOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [options[i], options[j]] = [options[j], options[i]];
+        [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
     }
 
     return {
@@ -338,38 +174,31 @@ const generateClockProblem = (level: number, use24Hour: boolean): ClockProblem =
         minute,
         targetDigital,
         germanTime,
-        options,
+        options: allOptions,
         theme
     };
 };
 
-const ClockGameView: React.FC = () => {
+const ClockWordsGameView: React.FC = () => {
     const navigate = useNavigate();
     const [playerProgress, setPlayerProgress] = useState(loadProgress());
-    const [level, setLevel] = useState<number>(playerProgress.clockLevel || 1);
+    const [level, setLevel] = useState<number>(playerProgress.clockWordsLevel || 1);
     const [showLevelPicks, setShowLevelPicks] = useState(false);
 
-    // 24-Hour mode enabled by default
+    // 24-Hour mode sync
     const [is24Hour, setIs24Hour] = useState<boolean>(() => {
         const stored = localStorage.getItem('mathkids_clock_24h');
         return stored !== 'false';
     });
 
-    const [problem, setProblem] = useState<ClockProblem>(() =>
-        generateClockProblem(level, is24Hour)
+    const [problem, setProblem] = useState<ClockWordsProblem>(() =>
+        generateClockWordsProblem(level, is24Hour)
     );
     const [round, setRound] = useState(1);
     const [score, setScore] = useState(0);
     const [streak, setStreak] = useState(0);
 
-    // Input Mode: 'manual' (type hour & minute) vs 'choice' (choose from 4)
-    const [inputMode, setInputMode] = useState<'manual' | 'choice'>('manual');
-
-    // Manual input fields
-    const [hourInput, setHourInput] = useState<string>('');
-    const [minuteInput, setMinuteInput] = useState<string>('');
-    const [activeField, setActiveField] = useState<'hours' | 'minutes'>('hours');
-
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
     const [showGermanPhrase, setShowGermanPhrase] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -395,87 +224,80 @@ const ClockGameView: React.FC = () => {
     }, [problem.germanTime.spokenText]);
 
     const nextRound = useCallback(() => {
-        setHourInput('');
-        setMinuteInput('');
-        setActiveField('hours');
+        setSelectedOption(null);
         setFeedback(null);
         setShowGermanPhrase(false);
-        setProblem(generateClockProblem(level, is24Hour));
+        setProblem(generateClockWordsProblem(level, is24Hour));
     }, [level, is24Hour]);
 
     const handleToggle24Hour = () => {
         const nextVal = !is24Hour;
         setIs24Hour(nextVal);
         localStorage.setItem('mathkids_clock_24h', String(nextVal));
-        setHourInput('');
-        setMinuteInput('');
-        setActiveField('hours');
+        setSelectedOption(null);
         setFeedback(null);
         setShowGermanPhrase(false);
-        setProblem(generateClockProblem(level, nextVal));
+        setProblem(generateClockWordsProblem(level, nextVal));
     };
 
     const handleSelectLevel = (newLevel: number) => {
         setLevel(newLevel);
-        const updatedProgress = setGameLevel('clock', newLevel);
+        const updatedProgress = setGameLevel('clockWords', newLevel);
         setPlayerProgress(updatedProgress);
         setShowLevelPicks(false);
         setRound(1);
         setScore(0);
         setStreak(0);
-        setHourInput('');
-        setMinuteInput('');
-        setActiveField('hours');
+        setSelectedOption(null);
         setFeedback(null);
         setShowGermanPhrase(false);
-        setProblem(generateClockProblem(newLevel, is24Hour));
+        setProblem(generateClockWordsProblem(newLevel, is24Hour));
     };
 
-    const handleAnswerSubmit = (submittedTime: string) => {
-        if (feedback !== null || showReward) return;
+    const handleSelectOption = (opt: ClockWordsOption) => {
+        if (feedback === 'correct') return; // Prevent double taps during transition
 
-        soundManager.playClick();
+        setSelectedOption(opt.phrase);
 
-        const [subH, subM] = submittedTime.split(':').map(Number);
-        const [tarH, tarM] = problem.targetDigital.split(':').map(Number);
-
-        let isCorrect = false;
-        if (is24Hour) {
-            isCorrect = subH === tarH && subM === tarM;
-        } else {
-            isCorrect = (subH % 12) === (tarH % 12) && subM === tarM;
-        }
-
-        if (isCorrect) {
+        if (opt.isCorrect) {
             soundManager.playCorrect();
             setFeedback('correct');
             setShowGermanPhrase(true);
-            setScore(s => s + 10 + streak * 2);
-            setStreak(st => st + 1);
+            setScore(s => s + 1);
+            setStreak(s => s + 1);
 
-            // Trigger smart German audio pronunciation
+            // Play clean German voiceover ONLY on correct answer
             playVoicePronunciation(problem.germanTime.spokenText);
 
+            // Small confetti burst on streaks
             if ((streak + 1) % 5 === 0) {
-                confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
             }
 
+            // Track progress
+            const res = trackGeneralGame('clockWords');
+            setPlayerProgress(res.progress);
+
             if (round >= 10) {
-                const res = trackGeneralGame('clock', 25, true);
+                // Finish session
                 setTimeout(() => {
                     setRewardData({
-                        xp: 25,
-                        leveledUp: res.leveledUp,
+                        xp: 35,
+                        sticker: res.unlockedSticker,
                         achievement: res.unlockedAchievement,
-                        sticker: res.unlockedSticker
+                        leveledUp: res.leveledUp
                     });
                     setShowReward(true);
-                }, 1600);
+                }, 1300);
             } else {
-                setRound(r => r + 1);
                 setTimeout(() => {
+                    setRound(r => r + 1);
                     nextRound();
-                }, 2200);
+                }, 1400);
             }
         } else {
             soundManager.playIncorrect();
@@ -484,106 +306,23 @@ const ClockGameView: React.FC = () => {
 
             setTimeout(() => {
                 setFeedback(null);
-            }, 800);
+                setSelectedOption(null);
+            }, 750);
         }
     };
 
-    const handleNumpadDigit = (digit: string) => {
-        soundManager.playClick();
-        if (activeField === 'hours') {
-            const nextVal = hourInput.length >= 2 ? digit : hourInput + digit;
-            const num = parseInt(nextVal, 10);
-            const maxAllowed = is24Hour ? 23 : 12;
+    const currentTheme = problem.theme;
 
-            if (!isNaN(num) && num <= maxAllowed) {
-                setHourInput(nextVal);
-                if (nextVal.length === 2 || (is24Hour && num >= 3) || (!is24Hour && num >= 2)) {
-                    setActiveField('minutes');
-                }
-            } else if (!isNaN(num) && num > maxAllowed) {
-                setHourInput(digit);
-                setActiveField('minutes');
-            }
-        } else {
-            const nextVal = minuteInput.length >= 2 ? digit : minuteInput + digit;
-            const num = parseInt(nextVal, 10);
-            if (!isNaN(num) && num < 60) {
-                setMinuteInput(nextVal);
-            }
-        }
-    };
-
-    const handleNumpadBackspace = () => {
-        soundManager.playClick();
-        if (activeField === 'minutes') {
-            if (minuteInput.length > 0) {
-                setMinuteInput(prev => prev.slice(0, -1));
-            } else {
-                setActiveField('hours');
-            }
-        } else {
-            setHourInput(prev => prev.slice(0, -1));
-        }
-    };
-
-    const handleManualCheck = () => {
-        if (!hourInput) {
-            setActiveField('hours');
-            return;
-        }
-        if (!minuteInput) {
-            setActiveField('minutes');
-            return;
-        }
-        const h = parseInt(hourInput, 10);
-        const m = parseInt(minuteInput, 10);
-        if (isNaN(h) || isNaN(m)) return;
-
-        handleAnswerSubmit(formatTime(h, m));
-    };
-
-    // Keyboard support
-    useEffect(() => {
-        if (inputMode !== 'manual' || showReward) return;
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-            if (e.key >= '0' && e.key <= '9') {
-                e.preventDefault();
-                handleNumpadDigit(e.key);
-            } else if (e.key === 'Backspace') {
-                e.preventDefault();
-                handleNumpadBackspace();
-            } else if (e.key === ':' || e.key === 'Tab' || e.key === 'ArrowRight') {
-                e.preventDefault();
-                setActiveField('minutes');
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                setActiveField('hours');
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                handleManualCheck();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                setHourInput('');
-                setMinuteInput('');
-                setActiveField('hours');
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    });
-
-    // Calculate Hand Angles
-    const hourAngle = ((problem.hour12 % 12) + problem.minute / 60) * 30;
+    // Angles calculation:
+    // Minute hand: minute * 6 deg
+    // Hour hand: (hour12 % 12) * 30 deg + (minute / 60) * 30 deg
     const minuteAngle = problem.minute * 6;
+    const hourAngle = (problem.hour12 % 12) * 30 + (problem.minute / 60) * 30;
 
-    // 12-hour dial numbers
-    const dialNumbers = Array.from({ length: 12 }, (_, i) => i + 1);
+    // Dial Numbers: 1 to 12
+    const dialNumbers = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-    // 24-hour afternoon numbers corresponding to 1..12: (13..24/00)
+    // 24-Hour Dial Numbers (Inner ring: 13, 14, 15, ... 23, 00)
     const dial24Numbers = [
         { n: 12, text: '00' },
         { n: 1, text: '13' },
@@ -599,17 +338,27 @@ const ClockGameView: React.FC = () => {
         { n: 11, text: '23' }
     ];
 
-    const currentTheme = problem.theme;
-
     return (
-        <div className="game-view clock-game-view">
-            {/* Header */}
+        <div className="clock-game-view clock-words-mode">
+            {/* Header with Nav, Level, Score & Controls */}
             <div className="game-header">
-                <button className="back-button" onClick={() => navigate('/')}>
+                <button
+                    type="button"
+                    className="back-button"
+                    onClick={() => navigate('/')}
+                    aria-label="Zurück zum Hauptmenü"
+                >
                     ←
                 </button>
 
-                <div className="clock-level-badge" onClick={() => setShowLevelPicks(true)}>
+                {/* Level Picker Pill */}
+                <div
+                    className="clock-level-badge"
+                    onClick={() => setShowLevelPicks(true)}
+                    role="button"
+                    tabIndex={0}
+                    title="Schwierigkeitsgrad wählen"
+                >
                     <span>{level === 1 ? '🌱 Einfach' : level === 2 ? '🚀 Mittel' : '👑 Schwer'}</span>
                     <span className="level-arrow">▼</span>
                 </div>
@@ -634,99 +383,79 @@ const ClockGameView: React.FC = () => {
                     type="button"
                     className="clock-info-btn"
                     onClick={() => setShowInfoModal(true)}
-                    title="Erklärung der Uhrzeiger"
+                    title="Erklärung der Uhrzeiger & Regeln"
                     aria-label="Hilfe & Zeiger-Erklärung"
                 >
                     ℹ️
                 </button>
-
-                {/* Input Mode Toggle */}
-                <div className="header-mode-toggle">
-                    <button
-                        type="button"
-                        className={`toggle-option ${inputMode === 'manual' ? 'active' : ''}`}
-                        onClick={() => setInputMode('manual')}
-                        title="Tippen"
-                    >
-                        ✍️
-                    </button>
-                    <button
-                        type="button"
-                        className={`toggle-option ${inputMode === 'choice' ? 'active' : ''}`}
-                        onClick={() => setInputMode('choice')}
-                        title="4 Optionen"
-                    >
-                        🔲
-                    </button>
-                </div>
             </div>
 
             {/* Progress Bar */}
             <div className="clock-progress-bar-container">
-                <div className="clock-progress-bar" style={{ width: `${(round / 10) * 100}%` }} />
-                <span className="round-counter">Aufgabe {round} / 10</span>
+                <div
+                    className="clock-progress-bar"
+                    style={{ width: `${(round / 10) * 100}%` }}
+                />
+                <span className="round-counter">Runde {round} / 10</span>
             </div>
 
-            {/* Daytime Sky Banner (Утро / День / Вечер / Ночь) */}
+            {/* Daytime Sky Banner (Morgen, Nachmittag, Abend, Nacht) */}
             <motion.div
                 className="daytime-sky-banner"
+                key={currentTheme.key}
                 style={{ background: currentTheme.skyGradient }}
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0.8, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
-                key={`banner-${currentTheme.key}`}
+                transition={{ duration: 0.3 }}
             >
                 <div className="sky-banner-content">
                     <span className="sky-icon-large">{currentTheme.icon}</span>
                     <div className="sky-text-stack">
                         <span className="sky-label-de">{currentTheme.nameDe}</span>
-                        <span className="sky-label-ru">{currentTheme.nameRu} ({is24Hour ? (problem.hour24 >= 12 ? '12:00 – 23:59' : '00:00 – 11:59') : '12h'})</span>
+                        <span className="sky-label-ru">{currentTheme.nameRu}</span>
                     </div>
                 </div>
-
-                {is24Hour && problem.hour24 >= 12 && (
-                    <span className="badge-24h-indicator">24h</span>
-                )}
+                <div className="badge-24h-indicator">
+                    {is24Hour ? '24-Stunden-Uhr' : '12-Stunden-Uhr'}
+                </div>
             </motion.div>
 
-            {/* Dynamic Analog Clock Card */}
+            {/* Clock Dial Card */}
             <motion.div
                 className="clock-card"
-                style={{
-                    background: currentTheme.cardBg,
-                    borderColor: currentTheme.bezelColor,
-                    boxShadow: `0 14px 32px rgba(0, 0, 0, 0.12), 0 0 0 2px ${currentTheme.bezelColor}33`
-                }}
-                initial={{ scale: 0.95, opacity: 0 }}
+                key={`clock-card-${round}-${problem.targetDigital}`}
+                style={{ background: currentTheme.cardBg }}
+                initial={{ scale: 0.94, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 22 }}
             >
                 <div className="clock-title-bar">
                     <h3 style={{ color: currentTheme.numberColor }}>
                         Wie spät ist es? {currentTheme.icon}
                     </h3>
                     <p className="clock-hint-sub" style={{ color: currentTheme.subtextColor }}>
-                        Schau auf die Zeiger und bestimme die Uhrzeit
+                        Wähle die richtige Uhrzeit in Worten
                     </p>
                 </div>
 
-                {/* SVG Analog Clock with Daytime Colors */}
+                {/* SVG Analog Clock with Daytime Colors & Authentic Lernuhr Badges */}
                 <div className="clock-svg-wrapper">
                     <svg viewBox="0 0 300 300" className="analog-clock-svg" aria-label="Analoge Uhr">
                         <defs>
-                            <radialGradient id="clockDialGrad" cx="50%" cy="50%" r="50%">
+                            <radialGradient id="clockWordsDialGrad" cx="50%" cy="50%" r="50%">
                                 <stop offset="0%" stopColor={currentTheme.dialGradient[0]} />
                                 <stop offset="100%" stopColor={currentTheme.dialGradient[1]} />
                             </radialGradient>
-                            <filter id="handShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <filter id="handShadowWords" x="-20%" y="-20%" width="140%" height="140%">
                                 <feDropShadow dx="1" dy="3" stdDeviation="3" floodOpacity="0.25" />
                             </filter>
                         </defs>
 
-                        {/* Outer Bezel (Adapts to daytime theme) */}
+                        {/* Outer Bezel */}
                         <circle cx="150" cy="150" r="144" fill="#ffffff" stroke={currentTheme.bezelColor} strokeWidth="4" />
-                        <circle cx="150" cy="150" r="138" fill="url(#clockDialGrad)" stroke={currentTheme.dialBorder} strokeWidth="2.5" />
+                        <circle cx="150" cy="150" r="138" fill="url(#clockWordsDialGrad)" stroke={currentTheme.dialBorder} strokeWidth="2.5" />
 
-                        {/* Subtle Left (VOR) and Right (NACH) Zone Halves (Authentic German Lernuhr) */}
+                        {/* Subtle Left (VOR) and Right (NACH) Zone Halves */}
                         <path
                             d="M 150 14 A 136 136 0 0 1 150 286 Z"
                             fill={currentTheme.key === 'night' ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)'}
@@ -852,7 +581,7 @@ const ClockGameView: React.FC = () => {
                             const subWidth = m.subW || 34;
 
                             return (
-                                <g key={`min-badge-${m.n}`}>
+                                <g key={`words-min-badge-${m.n}`}>
                                     <rect
                                         x={x - 12}
                                         y={y - 8}
@@ -966,7 +695,7 @@ const ClockGameView: React.FC = () => {
                                 : false;
 
                             return (
-                                <g key={`h24-${m24.n}`}>
+                                <g key={`words-h24-${m24.n}`}>
                                     <circle
                                         cx={x}
                                         cy={y}
@@ -990,12 +719,11 @@ const ClockGameView: React.FC = () => {
                             );
                         })}
 
-                        {/* Hour Hand (Rotated with smooth transition around center 150, 150) */}
+                        {/* Hour Hand (Rotated around 150, 150) */}
                         <g
                             transform={`rotate(${hourAngle} 150 150)`}
                             style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Hour Hand Body - Bold and vibrant red */}
                             <path
                                 d="M 143 150 L 145 82 L 150 68 L 155 82 L 157 150 Z"
                                 fill="#ef4444"
@@ -1003,7 +731,6 @@ const ClockGameView: React.FC = () => {
                                 strokeWidth="2.5"
                                 strokeLinejoin="round"
                             />
-                            {/* Hour Hand Counter-tail */}
                             <path
                                 d="M 144 150 L 144 168 A 6 6 0 0 0 156 168 L 156 150 Z"
                                 fill="#ef4444"
@@ -1013,12 +740,11 @@ const ClockGameView: React.FC = () => {
                             />
                         </g>
 
-                        {/* Minute Hand (Rotated with smooth transition around center 150, 150) */}
+                        {/* Minute Hand (Rotated around 150, 150) */}
                         <g
                             transform={`rotate(${minuteAngle} 150 150)`}
                             style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Minute Hand Body - Sleek and vibrant blue */}
                             <path
                                 d="M 146 150 L 147.5 48 L 150 34 L 152.5 48 L 154 150 Z"
                                 fill="#3b82f6"
@@ -1026,7 +752,6 @@ const ClockGameView: React.FC = () => {
                                 strokeWidth="2"
                                 strokeLinejoin="round"
                             />
-                            {/* Minute Hand Counter-tail */}
                             <path
                                 d="M 146.5 150 L 146.5 174 A 3.5 3.5 0 0 0 153.5 174 L 153.5 150 Z"
                                 fill="#3b82f6"
@@ -1064,112 +789,43 @@ const ClockGameView: React.FC = () => {
                 </AnimatePresence>
             </motion.div>
 
-            {/* Answer Input Area: Manual Digital Box vs 4 Choices */}
-            {inputMode === 'manual' ? (
-                <div className="clock-manual-container">
-                    {/* Digital Time Inputs Display */}
-                    <div className="digital-display-card">
-                        <div
-                            className={`digital-slot hour-slot ${activeField === 'hours' ? 'active' : ''} ${feedback === 'incorrect' ? 'slot-error' : ''}`}
-                            onClick={() => setActiveField('hours')}
-                        >
-                            <span className="slot-label">STUNDE {is24Hour ? '(0–23)' : '(1–12)'}</span>
-                            <span className="slot-value">
-                                {hourInput ? (hourInput.length === 1 ? `0${hourInput}` : hourInput) : '--'}
-                            </span>
-                        </div>
-
-                        <span className="digital-colon">:</span>
-
-                        <div
-                            className={`digital-slot minute-slot ${activeField === 'minutes' ? 'active' : ''} ${feedback === 'incorrect' ? 'slot-error' : ''}`}
-                            onClick={() => setActiveField('minutes')}
-                        >
-                            <span className="slot-label">MINUTE (0–59)</span>
-                            <span className="slot-value">
-                                {minuteInput ? (minuteInput.length === 1 ? `0${minuteInput}` : minuteInput) : '--'}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Numpad */}
-                    <div className="numpad-grid clock-numpad">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
-                            <motion.button
-                                key={num}
-                                type="button"
-                                className="numpad-btn"
-                                onClick={() => handleNumpadDigit(String(num))}
-                                whileTap={{ scale: 0.92 }}
-                                whileHover={{ scale: 1.05 }}
-                            >
-                                {num}
-                            </motion.button>
-                        ))}
-                        <motion.button
-                            type="button"
-                            className="numpad-btn numpad-action numpad-delete"
-                            onClick={handleNumpadBackspace}
-                            whileTap={{ scale: 0.92 }}
-                            whileHover={{ scale: 1.05 }}
-                            aria-label="Löschen"
-                            title="Löschen"
-                        >
-                            ⌫
-                        </motion.button>
-                        <motion.button
-                            type="button"
-                            className="numpad-btn"
-                            onClick={() => handleNumpadDigit('0')}
-                            whileTap={{ scale: 0.92 }}
-                            whileHover={{ scale: 1.05 }}
-                        >
-                            0
-                        </motion.button>
-                        <motion.button
-                            type="button"
-                            className={`numpad-btn numpad-action numpad-submit ${hourInput && minuteInput ? 'ready' : ''}`}
-                            onClick={handleManualCheck}
-                            disabled={!hourInput || !minuteInput}
-                            whileTap={{ scale: 0.92 }}
-                            whileHover={{ scale: 1.05 }}
-                            aria-label="Prüfen"
-                            title="Prüfen"
-                        >
-                            ✔️
-                        </motion.button>
-                    </div>
-                </div>
-            ) : (
-                /* Choice Grid (4 Options) with Colloquial German Rule Text */
-                <div className="clock-choices-grid">
+            {/* 4 Choices in German Words (Wortkarten) */}
+            <div className="clock-words-choice-container">
+                <div className="clock-words-grid">
                     {problem.options.map((opt, idx) => {
-                        const [optH, optM] = opt.split(':').map(Number);
-                        const optGerman = getSmartGermanTime(optH, optM);
+                        const isSelected = selectedOption === opt.phrase;
+                        let cardStateClass = '';
+                        if (isSelected) {
+                            cardStateClass = opt.isCorrect ? 'word-card-correct' : 'word-card-incorrect';
+                        }
 
                         return (
                             <motion.button
-                                key={opt + '-' + idx}
-                                className="clock-choice-card"
-                                onClick={() => handleAnswerSubmit(opt)}
-                                whileHover={{ scale: 1.04 }}
-                                whileTap={{ scale: 0.96 }}
+                                key={opt.phrase + '-' + idx}
+                                type="button"
+                                className={`clock-word-card ${cardStateClass}`}
+                                onClick={() => handleSelectOption(opt)}
+                                whileHover={{ scale: 1.03, y: -2 }}
+                                whileTap={{ scale: 0.97 }}
+                                disabled={feedback === 'correct'}
                             >
-                                <span className="choice-digital">{opt}</span>
-                                <span className="choice-phrase">{optGerman.colloquialRule}</span>
+                                <span className="word-card-bullet">
+                                    {isSelected ? (opt.isCorrect ? '✔️' : '❌') : '💬'}
+                                </span>
+                                <span className="word-card-text">{opt.phrase}</span>
                             </motion.button>
                         );
                     })}
                 </div>
-            )}
+            </div>
 
             {/* Level Selection Modal */}
             <AnimatePresence>
                 {showLevelPicks && (
                     <LevelSelectionOverlay
-                        gameId="clock"
+                        gameId="clockWords"
                         currentLevel={level}
-                        title="Uhren-Meister 24h ⏰"
+                        title="Uhrzeit auf Deutsch (Worte) ⏰"
                         icon="⏰"
                         onSelectLevel={handleSelectLevel}
                         onClose={() => setShowLevelPicks(false)}
@@ -1266,4 +922,4 @@ const ClockGameView: React.FC = () => {
     );
 };
 
-export default ClockGameView;
+export default ClockWordsGameView;

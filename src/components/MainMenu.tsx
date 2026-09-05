@@ -124,7 +124,8 @@ const MainMenu = () => {
                     <MenuCard to="/game/manualAddition" icon="✍️➕" title="Plus tippen" color="#10b981" />
                     <MenuCard to="/game/manualSubtraction" icon="✍️➖" title="Minus tippen" color="#f43f5e" />
                     <MenuCard to="/game/manual" icon="✍️🔀" title="Mix tippen" color="#6366f1" />
-                    <MenuCard to="/clock" icon="⏰" title="Uhrzeit lernen" color="#3b82f6" level={progress.clockLevel} />
+                    <MenuCard to="/clock" icon="⏰" title="Uhrzeit tippen" color="#3b82f6" level={progress.clockLevel} />
+                    <MenuCard to="/clock-words" icon="⏰🗣️" title="Uhrzeit in Worten" color="#06b6d4" level={progress.clockWordsLevel} />
                     <MenuCard to="/game/addition" icon="➕" title="Plus (4 Optionen)" color="#10b981" />
                     <MenuCard to="/game/subtraction" icon="➖" title="Minus (4 Optionen)" color="#f43f5e" />
                     <MenuCard to="/game/multiplication" icon="×" title="Malrechnen" color="#f59e0b" />
@@ -142,6 +143,7 @@ const MainMenu = () => {
             >
                 <div className="section-grid">
                     <MenuCard to="/clock" icon="⏰" title="Uhren-Meister" color="var(--c-sky)" level={progress.clockLevel} />
+                    <MenuCard to="/clock-words" icon="⏰🗣️" title="Uhren-Worte" color="var(--c-teal)" level={progress.clockWordsLevel} />
                     <MenuCard to="/matching/antonyms" icon="🎭" title="Gegenteile" color="var(--c-violet)" />
                     <MenuCard to="/matching/synonyms" icon="📜" title="Synonyme" color="var(--c-sky)" />
                     <MenuCard to="/artikel" icon="👑" title="Artikel-König" color="var(--c-amber)" level={progress.artikelLevel} />
