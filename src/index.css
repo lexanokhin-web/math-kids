@@ -2006,6 +2006,34 @@ body {
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
+/* Hands Color Mode Toggle (Rot/Blau vs Einfarbig) */
+.clock-hands-toggle {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #cbd5e1;
+  padding: 5px 8px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.clock-hands-toggle:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.clock-hands-toggle.mono {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
 .clock-info-btn {
   background: rgba(255, 255, 255, 0.9);
   border: 1.5px solid #cbd5e1;
@@ -2754,6 +2782,12 @@ body {
     padding: 4px 8px;
     font-size: 0.75rem;
     border-radius: 12px;
+  }
+
+  .clock-hands-toggle {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    border-radius: 10px;
   }
 
   .clock-progress-bar-container {

@@ -355,6 +355,17 @@ const ClockGameView: React.FC = () => {
         return stored !== 'false';
     });
 
+    // Hands color mode: 'bicolor' (red/blue) vs 'monochrome' (same color)
+    const [handsColorMode, setHandsColorMode] = useState<'bicolor' | 'monochrome'>(() => {
+        return (localStorage.getItem('mathkids_clock_hands_style') as 'bicolor' | 'monochrome') || 'bicolor';
+    });
+
+    const handleToggleHandsColor = () => {
+        const nextMode = handsColorMode === 'bicolor' ? 'monochrome' : 'bicolor';
+        setHandsColorMode(nextMode);
+        localStorage.setItem('mathkids_clock_hands_style', nextMode);
+    };
+
     const [problem, setProblem] = useState<ClockProblem>(() =>
         generateClockProblem(level, is24Hour)
     );
@@ -576,9 +587,27 @@ const ClockGameView: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     });
 
-    // Calculate Hand Angles
-    const hourAngle = ((problem.hour12 % 12) + problem.minute / 60) * 30;
+    const currentTheme = problem.theme;
+
+    // Hands Colors (Bicolor vs Monochrome)
+    const isMonochrome = handsColorMode === 'monochrome';
+    const hourHandFill = isMonochrome
+        ? (currentTheme.key === 'night' ? '#f8fafc' : '#1e293b')
+        : '#ef4444';
+    const hourHandStroke = isMonochrome
+        ? (currentTheme.key === 'night' ? '#cbd5e1' : '#0f172a')
+        : '#b91c1c';
+
+    const minuteHandFill = isMonochrome
+        ? (currentTheme.key === 'night' ? '#f8fafc' : '#1e293b')
+        : '#3b82f6';
+    const minuteHandStroke = isMonochrome
+        ? (currentTheme.key === 'night' ? '#cbd5e1' : '#0f172a')
+        : '#1d4ed8';
+
+    // Angles calculation
     const minuteAngle = problem.minute * 6;
+    const hourAngle = (problem.hour12 % 12) * 30 + (problem.minute / 60) * 30;
 
     // 12-hour dial numbers
     const dialNumbers = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -598,8 +627,6 @@ const ClockGameView: React.FC = () => {
         { n: 10, text: '22' },
         { n: 11, text: '23' }
     ];
-
-    const currentTheme = problem.theme;
 
     return (
         <div className="game-view clock-game-view">
@@ -627,6 +654,17 @@ const ClockGameView: React.FC = () => {
                     title="24-Stunden / 12-Stunden Modus wechseln"
                 >
                     {is24Hour ? '24h' : '12h'}
+                </button>
+
+                {/* Hands Color Mode Toggle (Bicolor 🔴🔵 vs Monochrome ⚫⚫) */}
+                <button
+                    type="button"
+                    className={`clock-hands-toggle ${isMonochrome ? 'mono' : 'bicolor'}`}
+                    onClick={handleToggleHandsColor}
+                    title={isMonochrome ? 'Zeiger: Einfarbig (Klick für Rot/Blau)' : 'Zeiger: Rot/Blau (Klick für Einfarbig)'}
+                    aria-label="Zeigerfarben wechseln"
+                >
+                    {isMonochrome ? '⚫⚫' : '🔴🔵'}
                 </button>
 
                 {/* Info Help Button */}
@@ -995,19 +1033,19 @@ const ClockGameView: React.FC = () => {
                             transform={`rotate(${hourAngle} 150 150)`}
                             style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Hour Hand Body - Bold and vibrant red */}
+                            {/* Hour Hand Body */}
                             <path
                                 d="M 143 150 L 145 82 L 150 68 L 155 82 L 157 150 Z"
-                                fill="#ef4444"
-                                stroke="#b91c1c"
+                                fill={hourHandFill}
+                                stroke={hourHandStroke}
                                 strokeWidth="2.5"
                                 strokeLinejoin="round"
                             />
                             {/* Hour Hand Counter-tail */}
                             <path
                                 d="M 144 150 L 144 168 A 6 6 0 0 0 156 168 L 156 150 Z"
-                                fill="#ef4444"
-                                stroke="#b91c1c"
+                                fill={hourHandFill}
+                                stroke={hourHandStroke}
                                 strokeWidth="2.5"
                                 strokeLinejoin="round"
                             />
@@ -1018,19 +1056,19 @@ const ClockGameView: React.FC = () => {
                             transform={`rotate(${minuteAngle} 150 150)`}
                             style={{ transition: 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
                         >
-                            {/* Minute Hand Body - Sleek and vibrant blue */}
+                            {/* Minute Hand Body */}
                             <path
                                 d="M 146 150 L 147.5 48 L 150 34 L 152.5 48 L 154 150 Z"
-                                fill="#3b82f6"
-                                stroke="#1d4ed8"
+                                fill={minuteHandFill}
+                                stroke={minuteHandStroke}
                                 strokeWidth="2"
                                 strokeLinejoin="round"
                             />
                             {/* Minute Hand Counter-tail */}
                             <path
                                 d="M 146.5 150 L 146.5 174 A 3.5 3.5 0 0 0 153.5 174 L 153.5 150 Z"
-                                fill="#3b82f6"
-                                stroke="#1d4ed8"
+                                fill={minuteHandFill}
+                                stroke={minuteHandStroke}
                                 strokeWidth="2"
                                 strokeLinejoin="round"
                             />

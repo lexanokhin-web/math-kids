@@ -82,15 +82,24 @@ export const generateClockWordsProblem = (level: number, use24Hour: boolean): Cl
 
         if (level === 1) {
             // Level 1: Strictly different full hours (:00)
-            const hourOffset = (attempts % 11) + 1;
-            candidateH = (hour24 + (attempts % 2 === 0 ? hourOffset : -hourOffset) + 24) % 24;
+            const maxH = use24Hour ? 24 : 12;
+            const hourOffset = (attempts % (maxH - 1)) + 1;
+            if (use24Hour) {
+                candidateH = (hour24 + (attempts % 2 === 0 ? hourOffset : -hourOffset) + 24) % 24;
+            } else {
+                candidateH = ((hour24 - 1 + (attempts % 2 === 0 ? hourOffset : -hourOffset) + 12) % 12) + 1;
+            }
             candidateM = 0;
         } else {
             const variationType = Math.floor(Math.random() * 4);
             if (variationType === 0) {
                 // Hour shift (+1 or -1) with same minute
                 const delta = Math.random() > 0.5 ? 1 : -1;
-                candidateH = (hour24 + delta + 24) % 24;
+                if (use24Hour) {
+                    candidateH = (hour24 + delta + 24) % 24;
+                } else {
+                    candidateH = ((hour24 - 1 + delta + 12) % 12) + 1;
+                }
             } else if (variationType === 1) {
                 // Minute shift within the level's allowed pool
                 const otherMinutes = candidateMinutes.filter(m => m !== minute);
@@ -111,7 +120,11 @@ export const generateClockWordsProblem = (level: number, use24Hour: boolean): Cl
                 }
             } else {
                 // Random time within level pool
-                candidateH = Math.floor(Math.random() * 24);
+                if (use24Hour) {
+                    candidateH = Math.floor(Math.random() * 24);
+                } else {
+                    candidateH = Math.floor(Math.random() * 12) + 1;
+                }
                 candidateM = candidateMinutes[Math.floor(Math.random() * candidateMinutes.length)];
             }
         }
@@ -131,7 +144,8 @@ export const generateClockWordsProblem = (level: number, use24Hour: boolean): Cl
 
     // Fallback if needed
     while (distractorOptions.length < 3) {
-        const randH = (hour24 + distractorOptions.length + 1) % 24;
+        const delta = distractorOptions.length + 1;
+        const randH = use24Hour ? (hour24 + delta) % 24 : ((hour24 - 1 + delta) % 12) + 1;
         const randM = candidateMinutes[(distractorOptions.length * 2) % candidateMinutes.length];
         const candidateGerman = getSmartGermanTime(randH, randM);
         const phraseStr = candidateGerman.colloquialRule;
@@ -144,7 +158,7 @@ export const generateClockWordsProblem = (level: number, use24Hour: boolean): Cl
                 digitalHint: formatTimeDigits(randH, randM)
             });
         } else {
-            const safeH = (randH + 3) % 24;
+            const safeH = use24Hour ? (randH + 3) % 24 : ((randH + 2) % 12) + 1;
             const safeGerman = getSmartGermanTime(safeH, randM);
             distractorOptions.push({
                 phrase: safeGerman.colloquialRule,
@@ -190,6 +204,17 @@ const ClockWordsGameView: React.FC = () => {
         const stored = localStorage.getItem('mathkids_clock_24h');
         return stored !== 'false';
     });
+
+    // Hands color mode: 'bicolor' (red/blue) vs 'monochrome' (same color)
+    const [handsColorMode, setHandsColorMode] = useState<'bicolor' | 'monochrome'>(() => {
+        return (localStorage.getItem('mathkids_clock_hands_style') as 'bicolor' | 'monochrome') || 'bicolor';
+    });
+
+    const handleToggleHandsColor = () => {
+        const nextMode = handsColorMode === 'bicolor' ? 'monochrome' : 'bicolor';
+        setHandsColorMode(nextMode);
+        localStorage.setItem('mathkids_clock_hands_style', nextMode);
+    };
 
     const [problem, setProblem] = useState<ClockWordsProblem>(() =>
         generateClockWordsProblem(level, is24Hour)
@@ -313,6 +338,22 @@ const ClockWordsGameView: React.FC = () => {
 
     const currentTheme = problem.theme;
 
+    // Hands Colors (Bicolor vs Monochrome)
+    const isMonochrome = handsColorMode === 'monochrome';
+    const hourHandFill = isMonochrome
+        ? (currentTheme.key === 'night' ? '#f8fafc' : '#1e293b')
+        : '#ef4444';
+    const hourHandStroke = isMonochrome
+        ? (currentTheme.key === 'night' ? '#cbd5e1' : '#0f172a')
+        : '#b91c1c';
+
+    const minuteHandFill = isMonochrome
+        ? (currentTheme.key === 'night' ? '#f8fafc' : '#1e293b')
+        : '#3b82f6';
+    const minuteHandStroke = isMonochrome
+        ? (currentTheme.key === 'night' ? '#cbd5e1' : '#0f172a')
+        : '#1d4ed8';
+
     // Angles calculation:
     // Minute hand: minute * 6 deg
     // Hour hand: (hour12 % 12) * 30 deg + (minute / 60) * 30 deg
@@ -376,6 +417,17 @@ const ClockWordsGameView: React.FC = () => {
                     title="24-Stunden / 12-Stunden Modus wechseln"
                 >
                     {is24Hour ? '24h' : '12h'}
+                </button>
+
+                {/* Hands Color Mode Toggle (Bicolor 🔴🔵 vs Monochrome ⚫⚫) */}
+                <button
+                    type="button"
+                    className={`clock-hands-toggle ${isMonochrome ? 'mono' : 'bicolor'}`}
+                    onClick={handleToggleHandsColor}
+                    title={isMonochrome ? 'Zeiger: Einfarbig (Klick für Rot/Blau)' : 'Zeiger: Rot/Blau (Klick für Einfarbig)'}
+                    aria-label="Zeigerfarben wechseln"
+                >
+                    {isMonochrome ? '⚫⚫' : '🔴🔵'}
                 </button>
 
                 {/* Info Help Button */}
@@ -726,15 +778,15 @@ const ClockWordsGameView: React.FC = () => {
                         >
                             <path
                                 d="M 143 150 L 145 82 L 150 68 L 155 82 L 157 150 Z"
-                                fill="#ef4444"
-                                stroke="#b91c1c"
+                                fill={hourHandFill}
+                                stroke={hourHandStroke}
                                 strokeWidth="2.5"
                                 strokeLinejoin="round"
                             />
                             <path
                                 d="M 144 150 L 144 168 A 6 6 0 0 0 156 168 L 156 150 Z"
-                                fill="#ef4444"
-                                stroke="#b91c1c"
+                                fill={hourHandFill}
+                                stroke={hourHandStroke}
                                 strokeWidth="2.5"
                                 strokeLinejoin="round"
                             />
@@ -747,15 +799,15 @@ const ClockWordsGameView: React.FC = () => {
                         >
                             <path
                                 d="M 146 150 L 147.5 48 L 150 34 L 152.5 48 L 154 150 Z"
-                                fill="#3b82f6"
-                                stroke="#1d4ed8"
+                                fill={minuteHandFill}
+                                stroke={minuteHandStroke}
                                 strokeWidth="2"
                                 strokeLinejoin="round"
                             />
                             <path
                                 d="M 146.5 150 L 146.5 174 A 3.5 3.5 0 0 0 153.5 174 L 153.5 150 Z"
-                                fill="#3b82f6"
-                                stroke="#1d4ed8"
+                                fill={minuteHandFill}
+                                stroke={minuteHandStroke}
                                 strokeWidth="2"
                                 strokeLinejoin="round"
                             />
