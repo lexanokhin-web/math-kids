@@ -391,20 +391,30 @@ const ClockPracticeDualView: React.FC = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 280, damping: 22 }}
             >
-                {/* Title Banner */}
-                <div className="clock-title-bar">
+                {/* Title & Task Target Banner */}
+                <div className="dual-practice-header-banner">
                     {practiceMode === 'dualTime' ? (
-                        <>
-                            <h3>Wie spät ist es? (2 Varianten) ☀️🌙</h3>
-                            <p className="clock-hint-sub">Schreibe die Uhrzeit für Vormittag und Nachmittag (z.B. 1 Uhr & 13 Uhr)</p>
-                        </>
+                        <div className="dual-instruction-group">
+                            <span className="dual-sub-pill">☀️ Vormittag (1–12) & 🌙 Nachmittag (13–24)</span>
+                            <h3 className="dual-main-title">Wie spät ist es? (2 Varianten)</h3>
+                        </div>
                     ) : (
-                        <>
-                            <h3 className="draw-target-title">
-                                Stelle die Uhr auf: <span className="draw-highlight-time">{drawProblem.targetHourDisplay} Uhr</span> 🎯
-                            </h3>
-                            <p className="clock-hint-sub">Tippe auf die richtige Zahl auf der Uhr, um die rote Stundenzeiger zu setzen</p>
-                        </>
+                        <div className="draw-instruction-group">
+                            <div className="draw-task-sub">✏️ Zeichne den Zeiger ein für:</div>
+                            <div className="draw-target-time-pill">
+                                <span className="draw-target-icon">⏰</span>
+                                <span className="draw-target-hour">{drawProblem.targetHourDisplay} Uhr</span>
+                                <button
+                                    type="button"
+                                    className="draw-target-voice-btn"
+                                    onClick={() => playVoice(`Stelle die Uhr auf ${drawProblem.targetHourDisplay} Uhr`)}
+                                    title="Aufgabe vorlesen"
+                                    aria-label="Aufgabe vorlesen"
+                                >
+                                    🔊
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </div>
 
