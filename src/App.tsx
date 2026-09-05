@@ -31,6 +31,7 @@ import MultiplicationLevelSelect from './components/MultiplicationLevelSelect';
 import MultiplicationGameView from './components/MultiplicationGameView';
 import ClockGameView from './components/ClockGameView';
 import ClockWordsGameView from './components/ClockWordsGameView';
+import ClockPracticeDualView from './components/ClockPracticeDualView';
 import MateApp from './mate/App';
 import './index.css';
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="/image-match" element={<ImageWordMatchView />} />
           <Route path="/clock" element={<ClockGameView />} />
           <Route path="/clock-words" element={<ClockWordsGameView />} />
+          <Route path="/clock-dual" element={<ClockPracticeDualView />} />
           <Route path="/mate/*" element={<MateApp />} />
           <Route
             path="/settings"

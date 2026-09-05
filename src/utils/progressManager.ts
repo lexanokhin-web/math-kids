@@ -49,6 +49,8 @@ export interface Progress {
     clockLevel: number;
     clockWordsGamesCount: number;
     clockWordsLevel: number;
+    clockDualGamesCount: number;
+    clockDualLevel: number;
     
     [key: string]: number | string | Achievement[] | string[] | boolean | null | undefined;
 }
@@ -114,7 +116,9 @@ export const getEmptyProgress = (): Progress => ({
     clockGamesCount: 0,
     clockLevel: 1,
     clockWordsGamesCount: 0,
-    clockWordsLevel: 1
+    clockWordsLevel: 1,
+    clockDualGamesCount: 0,
+    clockDualLevel: 1
 });
 
 
