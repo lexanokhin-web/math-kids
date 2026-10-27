@@ -17,6 +17,7 @@ import ElsaAnnaView from './components/ElsaAnnaView';
 import StickerBookView from './components/StickerBookView';
 import MatchingGameView from './components/MatchingGameView';
 import ArtikelGameView from './components/ArtikelGameView';
+import WortartenGameView from './components/WortartenGameView';
 import SyllableTrainView from './components/SyllableTrainView';
 import ComparisonGameView from './components/ComparisonGameView';
 import RhymeGameView from './components/RhymeGameView';
@@ -71,6 +72,7 @@ function App() {
           <Route path="/sticker-book" element={<StickerBookView />} />
           <Route path="/matching/:type" element={<MatchingGameView />} />
           <Route path="/artikel" element={<ArtikelGameView />} />
+          <Route path="/wortarten" element={<WortartenGameView />} />
           <Route path="/syllables-train" element={<SyllableTrainView />} />
           <Route path="/comparison" element={<ComparisonGameView />} />
           <Route path="/rhyme" element={<RhymeGameView />} />

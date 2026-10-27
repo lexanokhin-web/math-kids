@@ -148,7 +148,8 @@ const MainMenu = () => {
                     <MenuCard to="/clock-words" icon="⏰🗣️" title="Uhren-Worte" color="var(--c-teal)" level={progress.clockWordsLevel} />
                     <MenuCard to="/matching/antonyms" icon="🎭" title="Gegenteile" color="var(--c-violet)" />
                     <MenuCard to="/matching/synonyms" icon="📜" title="Synonyme" color="var(--c-sky)" />
-                    <MenuCard to="/artikel" icon="👑" title="Artikel-König" color="var(--c-amber)" level={progress.artikelLevel} />
+                    <MenuCard to="/artikel" icon="👑" title="Artikel (der/die/das)" color="var(--c-amber)" level={progress.artikelLevel} />
+                    <MenuCard to="/wortarten" icon="🏷️" title="Wortarten (3 Spalten)" color="#3b82f6" level={progress.wortartenLevel} />
                     <MenuCard to="/syllables-train" icon="🚂" title="Silben-Zug" color="var(--c-rose)" level={progress.syllableLevel} />
                     <MenuCard to="/sequence" icon="🐍" title="Zahlen-Schlange" color="var(--c-orange)" level={progress.sequenceLevel} />
                     <MenuCard to="/rhyme" icon="🕵️" title="Reim-Detektiv" color="var(--c-indigo)" level={progress.rhymeLevel} />
@@ -170,6 +171,8 @@ const MainMenu = () => {
                 variants={itemVariants}
             >
                 <div className="section-grid">
+                    <MenuCard to="/artikel" icon="👑" title="Artikel (der/die/das)" color="var(--c-amber)" level={progress.artikelLevel} />
+                    <MenuCard to="/wortarten" icon="🏷️" title="Wortarten (3 Spalten)" color="#3b82f6" level={progress.wortartenLevel} />
                     <MenuCard to="/syllables" icon="🔡" title="Silben" color="var(--c-sky)" />
                     <MenuCard to="/words" icon="📝" title="Wörter" color="var(--c-sky)" />
                     <MenuCard to="/phrases" icon="🗣️" title="Phrasen" color="var(--c-sky)" />
