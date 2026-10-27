@@ -155,6 +155,17 @@ const WortartenGameView: React.FC = () => {
         speakGerman(text);
     };
 
+    // Child-friendly Frageprobe clue (never reveals the answer directly)
+    const getGrammarClue = (item: WortartKlasse2Item) => {
+        if (item.type === 'nomen') {
+            return 'Frageprobe: Wer oder was ist das? (Ein Ding, Mensch, Tier oder Pflanze)';
+        }
+        if (item.type === 'verb') {
+            return 'Frageprobe: Was tut jemand? (Etwas, das man tun kann: ich kann es tun!)';
+        }
+        return 'Frageprobe: Wie ist etwas? (Beschreibt eine Eigenschaft, Farbe oder Gefühl)';
+    };
+
     // Sort word into target column
     const handleSort = (targetType: Wortart) => {
         if (!currentWord || feedbackMessage?.isSuccess) return;
@@ -431,8 +442,8 @@ const WortartenGameView: React.FC = () => {
                                     </button>
                                     <button 
                                         className="hint-btn" 
-                                        onClick={() => setActiveHint(activeHint ? null : currentWord.exampleSentence)}
-                                        title="Beispielsatz anzeigen"
+                                        onClick={() => setActiveHint(activeHint ? null : getGrammarClue(currentWord))}
+                                        title="Frageprobe anzeigen"
                                     >
                                         💡
                                     </button>
@@ -455,7 +466,7 @@ const WortartenGameView: React.FC = () => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                 >
-                                    „{activeHint}“
+                                    💡 {activeHint}
                                 </motion.div>
                             )}
 

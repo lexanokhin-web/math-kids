@@ -46,7 +46,6 @@ const ArtikelGameView: React.FC = () => {
         word: string;
         gender: Gender;
         plural: string;
-        tip?: string;
     } | null>(null);
 
     // Basket mode collected words
@@ -144,8 +143,7 @@ const ArtikelGameView: React.FC = () => {
             setSolvedFeedback({
                 word: current.word,
                 gender: current.gender,
-                plural: current.plural,
-                tip: current.tip
+                plural: current.plural
             });
 
             // Read the correct article + word + plural aloud
@@ -375,13 +373,6 @@ const ArtikelGameView: React.FC = () => {
                                     <span className="plural-text">die {solvedFeedback.plural.replace(/^die\s+/i, '')}</span>
                                     <span className="plural-sparkle">✨</span>
                                 </motion.div>
-                            )}
-
-                            {/* Friendly Hint if present */}
-                            {!solvedFeedback && currentItem.tip && (
-                                <div className="noun-hint-subtle">
-                                    💡 {currentItem.tip}
-                                </div>
                             )}
                         </motion.div>
                     </AnimatePresence>
