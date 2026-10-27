@@ -227,18 +227,25 @@ const MatchingGameView = () => {
             <div className="game-header">
                 <button className="back-button" onClick={() => setPhase('level-select')}>←</button>
 
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    background: `${meta.color}18`,
-                    padding: '6px 14px',
-                    borderRadius: '16px',
-                    border: `2px solid ${meta.color}30`,
-                }}>
+                <button
+                    onClick={() => setPhase('level-select')}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: `${meta.color}18`,
+                        padding: '6px 14px',
+                        borderRadius: '16px',
+                        border: `2px solid ${meta.color}40`,
+                        cursor: 'pointer',
+                        transition: 'transform 0.15s ease',
+                    }}
+                    title="Schwierigkeit ändern"
+                >
                     <span>{meta.emoji}</span>
                     <span style={{ fontWeight: 800, color: meta.color, fontSize: '0.9rem' }}>{meta.name}</span>
-                </div>
+                    <span style={{ fontSize: '0.75rem', color: meta.color, opacity: 0.7 }}>▾</span>
+                </button>
 
                 <div className="score-display">
                     <span className="star">⭐</span>
@@ -293,19 +300,25 @@ const MatchingGameView = () => {
                                 transition={isWrong ? { duration: 0.4 } : {}}
                                 disabled={isMatched}
                                 style={{
-                                    padding: '14px 12px',
+                                    padding: '12px 10px',
                                     borderRadius: '18px',
                                     border: `3px solid ${isWrong ? '#ef4444' : isSelected ? accentColor : isMatched ? '#22c55e' : '#e2e8f0'}`,
                                     background: isWrong ? '#fef2f2' : isSelected ? `${accentColor}12` : isMatched ? '#f0fdf4' : '#ffffff',
                                     cursor: isMatched ? 'default' : 'pointer',
                                     opacity: isMatched ? 0.6 : 1,
                                     boxShadow: isSelected ? `0 4px 16px ${accentColor}25` : '0 2px 8px rgba(0,0,0,0.04)',
-                                    fontSize: '1.1rem',
+                                    fontSize: 'clamp(0.9rem, 2.5vw, 1.15rem)',
                                     fontWeight: 800,
                                     fontFamily: 'var(--font-main)',
                                     color: isMatched ? '#16a34a' : '#1e293b',
                                     textAlign: 'center',
                                     position: 'relative',
+                                    minHeight: '56px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    wordBreak: 'break-word',
+                                    lineHeight: 1.2,
                                     transition: 'border-color 0.2s, background 0.2s, opacity 0.3s',
                                 }}
                             >
@@ -365,19 +378,25 @@ const MatchingGameView = () => {
                                 transition={isWrong ? { duration: 0.4 } : {}}
                                 disabled={isMatched}
                                 style={{
-                                    padding: '14px 12px',
+                                    padding: '12px 10px',
                                     borderRadius: '18px',
                                     border: `3px solid ${isWrong ? '#ef4444' : isSelected ? accentColor : isMatched ? '#22c55e' : '#e2e8f0'}`,
                                     background: isWrong ? '#fef2f2' : isSelected ? `${accentColor}12` : isMatched ? '#f0fdf4' : '#ffffff',
                                     cursor: isMatched ? 'default' : 'pointer',
                                     opacity: isMatched ? 0.6 : 1,
                                     boxShadow: isSelected ? `0 4px 16px ${accentColor}25` : '0 2px 8px rgba(0,0,0,0.04)',
-                                    fontSize: '1.1rem',
+                                    fontSize: 'clamp(0.9rem, 2.5vw, 1.15rem)',
                                     fontWeight: 800,
                                     fontFamily: 'var(--font-main)',
                                     color: isMatched ? '#16a34a' : '#1e293b',
                                     textAlign: 'center',
                                     position: 'relative',
+                                    minHeight: '56px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    wordBreak: 'break-word',
+                                    lineHeight: 1.2,
                                     transition: 'border-color 0.2s, background 0.2s, opacity 0.3s',
                                 }}
                             >
