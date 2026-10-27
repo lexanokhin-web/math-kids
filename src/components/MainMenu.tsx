@@ -3,31 +3,175 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { loadProgress } from '../utils/progressManager';
 import React, { useState } from 'react';
 
+/* ─── Section / subsection config ──────────────────────── */
+
+interface SubSection {
+    label: string;
+    cards: CardProps[];
+}
+
+interface SectionConfig {
+    key: string;
+    title: string;
+    emoji: string;
+    coverImage?: string;
+    gradient: string;
+    borderColor: string;
+    subsections: SubSection[];
+}
+
+interface CardProps {
+    to: string;
+    icon: string;
+    title: string;
+    color: string;
+    level?: number;
+}
+
+const buildSections = (progress: ReturnType<typeof loadProgress>): SectionConfig[] => [
+    {
+        key: 'math',
+        title: 'Mathematik',
+        emoji: '🧮',
+        coverImage: '/images/math_cover.jpg',
+        gradient: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+        borderColor: '#93c5fd',
+        subsections: [
+            {
+                label: '✍️ Rechnen – Tippen',
+                cards: [
+                    { to: '/game/manualAddition', icon: '✍️➕', title: 'Plus tippen', color: '#10b981' },
+                    { to: '/game/manualSubtraction', icon: '✍️➖', title: 'Minus tippen', color: '#f43f5e' },
+                    { to: '/game/manual', icon: '✍️🔀', title: 'Mix tippen', color: '#6366f1' },
+                ],
+            },
+            {
+                label: '🎯 Rechnen – 4 Optionen',
+                cards: [
+                    { to: '/game/addition', icon: '➕', title: 'Plus', color: '#10b981' },
+                    { to: '/game/subtraction', icon: '➖', title: 'Minus', color: '#f43f5e' },
+                    { to: '/game/multiplication', icon: '×', title: 'Malrechnen', color: '#f59e0b' },
+                ],
+            },
+            {
+                label: '📐 Schriftlich rechnen',
+                cards: [
+                    { to: '/game/verticalAddition', icon: '⬇️➕', title: 'Schriftlich Plus', color: '#06b6d4' },
+                    { to: '/game/verticalSubtraction', icon: '⬇️➖', title: 'Schriftlich Minus', color: '#8b5cf6' },
+                ],
+            },
+            {
+                label: '⏰ Uhrzeit',
+                cards: [
+                    { to: '/clock-dual', icon: '☀️🌙', title: '1 & 13 Uhr (24h)', color: '#f59e0b', level: progress.clockDualLevel },
+                    { to: '/clock', icon: '⏰', title: 'Uhrzeit tippen', color: '#3b82f6', level: progress.clockLevel },
+                    { to: '/clock-words', icon: '⏰🗣️', title: 'Uhrzeit in Worten', color: '#06b6d4', level: progress.clockWordsLevel },
+                ],
+            },
+            {
+                label: '🔢 Zahlen & Logik',
+                cards: [
+                    { to: '/comparison', icon: '🐊', title: 'Größer / Kleiner', color: 'var(--c-emerald, #10b981)', level: progress.comparisonLevel },
+                    { to: '/sequence', icon: '🐍', title: 'Zahlen-Schlange', color: 'var(--c-orange, #f97316)', level: progress.sequenceLevel },
+                    { to: '/bridge', icon: '🌉', title: 'Rechen-Brücke', color: 'var(--c-violet, #8b5cf6)', level: progress.bridgeLevel },
+                    { to: '/sequence-memory', icon: '🧠', title: 'Sequenz-Meister', color: 'var(--c-indigo, #6366f1)', level: progress.sequenceMemoryLevel },
+                ],
+            },
+        ],
+    },
+    {
+        key: 'deutsch',
+        title: 'Deutsch & Sprache',
+        emoji: '🇩🇪',
+        gradient: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
+        borderColor: '#fcd34d',
+        subsections: [
+            {
+                label: '📝 Grammatik',
+                cards: [
+                    { to: '/artikel', icon: '👑', title: 'Artikel (der/die/das)', color: 'var(--c-amber, #f59e0b)', level: progress.artikelLevel },
+                    { to: '/wortarten', icon: '🏷️', title: 'Wortarten', color: '#3b82f6', level: progress.wortartenLevel },
+                ],
+            },
+            {
+                label: '🎮 Wortspiele',
+                cards: [
+                    { to: '/matching/antonyms', icon: '🎭', title: 'Gegenteile', color: 'var(--c-violet, #8b5cf6)' },
+                    { to: '/matching/synonyms', icon: '📜', title: 'Synonyme', color: 'var(--c-sky, #0ea5e9)' },
+                    { to: '/rhyme', icon: '🕵️', title: 'Reim-Detektiv', color: 'var(--c-indigo, #6366f1)', level: progress.rhymeLevel },
+                    { to: '/gap', icon: '✍️', title: 'Lücken-Füller', color: 'var(--c-teal, #14b8a6)', level: progress.gapLevel },
+                    { to: '/unscramble', icon: '🥗', title: 'Wort-Salat', color: 'var(--c-fuchsia, #d946ef)', level: progress.unscrambleLevel },
+                    { to: '/image-match', icon: '🖼️', title: 'Bild-Wort', color: 'var(--c-rose, #f43f5e)', level: progress.imageMatchLevel },
+                    { to: '/syllables-train', icon: '🚂', title: 'Silben-Zug', color: 'var(--c-rose, #f43f5e)', level: progress.syllableLevel },
+                ],
+            },
+        ],
+    },
+    {
+        key: 'reading',
+        title: 'Lesen & Geschichten',
+        emoji: '📚',
+        coverImage: '/images/reading_cover.jpg',
+        gradient: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+        borderColor: '#86efac',
+        subsections: [
+            {
+                label: '🔤 Wörter & Silben',
+                cards: [
+                    { to: '/syllables', icon: '🔡', title: 'Silben', color: 'var(--c-sky, #0ea5e9)' },
+                    { to: '/words', icon: '📝', title: 'Wörter', color: 'var(--c-sky, #0ea5e9)' },
+                    { to: '/phrases', icon: '🗣️', title: 'Phrasen', color: 'var(--c-sky, #0ea5e9)' },
+                ],
+            },
+            {
+                label: '📖 Lesen nach Stufen',
+                cards: [
+                    { to: '/extended-sentences', icon: '🌱', title: 'Stufe 1', color: '#22c55e' },
+                    { to: '/sentences', icon: '🚀', title: 'Stufe 2', color: '#f59e0b' },
+                    { to: '/lola-level-2', icon: '🌟', title: 'Stufe 3', color: '#f59e0b' },
+                    { to: '/lola-level-3', icon: '📜', title: 'Stufe 4', color: '#8b5cf6' },
+                    { to: '/lola-level-4', icon: '📖', title: 'Stufe 5', color: '#8b5cf6' },
+                ],
+            },
+            {
+                label: '✨ Specials',
+                cards: [
+                    { to: '/elsa-anna', icon: '❄️', title: 'Eiskönigin Special', color: 'var(--c-sky, #0ea5e9)' },
+                ],
+            },
+        ],
+    },
+];
+
+/* ─── Component ────────────────────────────────────────── */
+
 const MainMenu = () => {
     const progress = loadProgress();
     const xpPercent = progress.xp % 100;
 
+    const sections = buildSections(progress);
+
     const [expanded, setExpanded] = useState<Record<string, boolean>>({
         math: true,
-        games: false,
-        reading: false
+        deutsch: false,
+        reading: false,
     });
 
-    const toggleSection = (section: string) => {
-        setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
+    const toggleSection = (key: string) => {
+        setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.1 }
-        }
+            transition: { staggerChildren: 0.1 },
+        },
     };
 
     const itemVariants = {
         hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
+        visible: { y: 0, opacity: 1 },
     };
 
     return (
@@ -55,7 +199,7 @@ const MainMenu = () => {
                 )}
             </motion.div>
 
-            {/* Child-Friendly Hero Section with Mascot */}
+            {/* Hero Section */}
             <motion.div
                 className="hero-header glass-card"
                 variants={itemVariants}
@@ -69,7 +213,7 @@ const MainMenu = () => {
                     boxShadow: '0 12px 32px rgba(0,0,0,0.06)',
                     marginBottom: '28px',
                     position: 'relative',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                 }}
             >
                 <div>
@@ -85,7 +229,7 @@ const MainMenu = () => {
                             display: 'inline-block',
                             color: '#334155',
                             fontWeight: 700,
-                            fontSize: '1.05rem'
+                            fontSize: '1.05rem',
                         }}
                     >
                         Hallo! Lass uns zusammen lernen! ⭐
@@ -106,86 +250,49 @@ const MainMenu = () => {
                             borderRadius: '24px',
                             objectFit: 'cover',
                             boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                            border: '4px solid #ffffff'
+                            border: '4px solid #ffffff',
                         }}
                     />
                 </motion.div>
             </motion.div>
 
-            {/* Mathematics Section */}
-            <CollapsibleSection
-                title="🧮 Mathematik"
-                coverImage="/images/math_cover.jpg"
-                isOpen={expanded.math}
-                onToggle={() => toggleSection('math')}
-                variants={itemVariants}
-            >
-                <div className="section-grid">
-                    <MenuCard to="/game/manualAddition" icon="✍️➕" title="Plus tippen" color="#10b981" />
-                    <MenuCard to="/game/manualSubtraction" icon="✍️➖" title="Minus tippen" color="#f43f5e" />
-                    <MenuCard to="/game/manual" icon="✍️🔀" title="Mix tippen" color="#6366f1" />
-                    <MenuCard to="/clock-dual" icon="☀️🌙" title="1 & 13 Uhr (24h)" color="#f59e0b" level={progress.clockDualLevel} />
-                    <MenuCard to="/clock" icon="⏰" title="Uhrzeit tippen" color="#3b82f6" level={progress.clockLevel} />
-                    <MenuCard to="/clock-words" icon="⏰🗣️" title="Uhrzeit in Worten" color="#06b6d4" level={progress.clockWordsLevel} />
-                    <MenuCard to="/game/addition" icon="➕" title="Plus (4 Optionen)" color="#10b981" />
-                    <MenuCard to="/game/subtraction" icon="➖" title="Minus (4 Optionen)" color="#f43f5e" />
-                    <MenuCard to="/game/multiplication" icon="×" title="Malrechnen" color="#f59e0b" />
-                    <MenuCard to="/game/verticalAddition" icon="⬇️" title="Schriftlich Plus" color="#06b6d4" />
-                    <MenuCard to="/game/verticalSubtraction" icon="⬇️" title="Schriftlich Minus" color="#8b5cf6" />
-                </div>
-            </CollapsibleSection>
+            {/* Main Sections */}
+            {sections.map(section => (
+                <CollapsibleSection
+                    key={section.key}
+                    title={`${section.emoji} ${section.title}`}
+                    coverImage={section.coverImage}
+                    gradient={section.gradient}
+                    borderColor={section.borderColor}
+                    isOpen={expanded[section.key] ?? false}
+                    onToggle={() => toggleSection(section.key)}
+                    variants={itemVariants}
+                >
+                    {section.subsections.map(sub => (
+                        <div key={sub.label} style={{ marginBottom: '16px' }}>
+                            <div style={{
+                                fontSize: '0.95rem',
+                                fontWeight: 800,
+                                color: '#475569',
+                                padding: '6px 14px',
+                                marginBottom: '8px',
+                                borderLeft: `4px solid ${section.borderColor}`,
+                                background: 'rgba(255,255,255,0.5)',
+                                borderRadius: '0 10px 10px 0',
+                            }}>
+                                {sub.label}
+                            </div>
+                            <div className="section-grid">
+                                {sub.cards.map(card => (
+                                    <MenuCard key={card.to} {...card} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </CollapsibleSection>
+            ))}
 
-            {/* Games Section */}
-            <CollapsibleSection
-                title="🎮 Spiele"
-                isOpen={expanded.games}
-                onToggle={() => toggleSection('games')}
-                variants={itemVariants}
-            >
-                <div className="section-grid">
-                    <MenuCard to="/clock-dual" icon="✏️⏰" title="Zeiger & 24h" color="var(--c-orange)" level={progress.clockDualLevel} />
-                    <MenuCard to="/clock" icon="⏰" title="Uhren-Meister" color="var(--c-sky)" level={progress.clockLevel} />
-                    <MenuCard to="/clock-words" icon="⏰🗣️" title="Uhren-Worte" color="var(--c-teal)" level={progress.clockWordsLevel} />
-                    <MenuCard to="/matching/antonyms" icon="🎭" title="Gegenteile" color="var(--c-violet)" />
-                    <MenuCard to="/matching/synonyms" icon="📜" title="Synonyme" color="var(--c-sky)" />
-                    <MenuCard to="/artikel" icon="👑" title="Artikel (der/die/das)" color="var(--c-amber)" level={progress.artikelLevel} />
-                    <MenuCard to="/wortarten" icon="🏷️" title="Wortarten (3 Spalten)" color="#3b82f6" level={progress.wortartenLevel} />
-                    <MenuCard to="/syllables-train" icon="🚂" title="Silben-Zug" color="var(--c-rose)" level={progress.syllableLevel} />
-                    <MenuCard to="/sequence" icon="🐍" title="Zahlen-Schlange" color="var(--c-orange)" level={progress.sequenceLevel} />
-                    <MenuCard to="/rhyme" icon="🕵️" title="Reim-Detektiv" color="var(--c-indigo)" level={progress.rhymeLevel} />
-                    <MenuCard to="/gap" icon="✍️" title="Lücken-Füller" color="var(--c-teal)" level={progress.gapLevel} />
-                    <MenuCard to="/bridge" icon="🌉" title="Rechen-Brücke" color="var(--c-violet)" level={progress.bridgeLevel} />
-                    <MenuCard to="/image-match" icon="🖼️" title="Bild-Wort" color="var(--c-rose)" level={progress.imageMatchLevel} />
-                    <MenuCard to="/unscramble" icon="🥗" title="Wort-Salat" color="var(--c-fuchsia)" level={progress.unscrambleLevel} />
-                    <MenuCard to="/comparison" icon="🐊" title="Größer/Kleiner" color="var(--c-emerald)" level={progress.comparisonLevel} />
-                    <MenuCard to="/sequence-memory" icon="🧠" title="Sequenz-Meister" color="var(--c-indigo)" level={progress.sequenceMemoryLevel} />
-                </div>
-            </CollapsibleSection>
-
-            {/* Reading Section */}
-            <CollapsibleSection
-                title="📚 Lesen & Geschichten"
-                coverImage="/images/reading_cover.jpg"
-                isOpen={expanded.reading}
-                onToggle={() => toggleSection('reading')}
-                variants={itemVariants}
-            >
-                <div className="section-grid">
-                    <MenuCard to="/artikel" icon="👑" title="Artikel (der/die/das)" color="var(--c-amber)" level={progress.artikelLevel} />
-                    <MenuCard to="/wortarten" icon="🏷️" title="Wortarten (3 Spalten)" color="#3b82f6" level={progress.wortartenLevel} />
-                    <MenuCard to="/syllables" icon="🔡" title="Silben" color="var(--c-sky)" />
-                    <MenuCard to="/words" icon="📝" title="Wörter" color="var(--c-sky)" />
-                    <MenuCard to="/phrases" icon="🗣️" title="Phrasen" color="var(--c-sky)" />
-                    <MenuCard to="/extended-sentences" icon="🌱" title="Stufe 1" color="var(--c-amber)" />
-                    <MenuCard to="/sentences" icon="🚀" title="Stufe 2" color="var(--c-amber)" />
-                    <MenuCard to="/lola-level-2" icon="🌟" title="Stufe 3" color="var(--c-amber)" />
-                    <MenuCard to="/lola-level-3" icon="📜" title="Stufe 4" color="var(--c-violet)" />
-                    <MenuCard to="/lola-level-4" icon="📖" title="Stufe 5" color="var(--c-violet)" />
-                    <MenuCard to="/elsa-anna" icon="❄️" title="Eiskönigin Special" color="var(--c-sky)" />
-                </div>
-            </CollapsibleSection>
-
-            {/* Olympiad Card with 3D Trophy Banner */}
+            {/* Olympiad Card */}
             <motion.section variants={itemVariants} className="olympiad-section" style={{ marginTop: 28 }}>
                 <Link
                     to="/mate"
@@ -199,7 +306,7 @@ const MainMenu = () => {
                         background: 'linear-gradient(135deg, #fffbe0 0%, #fef3c7 100%)',
                         border: '3px solid #f59e0b',
                         textDecoration: 'none',
-                        boxShadow: '0 12px 28px rgba(245, 158, 11, 0.15)'
+                        boxShadow: '0 12px 28px rgba(245, 158, 11, 0.15)',
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -211,7 +318,7 @@ const MainMenu = () => {
                                 height: '70px',
                                 borderRadius: '16px',
                                 objectFit: 'cover',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             }}
                         />
                         <div>
@@ -251,16 +358,20 @@ const MainMenu = () => {
     );
 };
 
+/* ─── Collapsible Section ──────────────────────────────── */
+
 interface CollapsibleSectionProps {
     title: string;
     coverImage?: string;
+    gradient: string;
+    borderColor: string;
     isOpen: boolean;
     onToggle: () => void;
     children: React.ReactNode;
     variants: Variants;
 }
 
-const CollapsibleSection = ({ title, coverImage, isOpen, onToggle, children, variants }: CollapsibleSectionProps) => (
+const CollapsibleSection = ({ title, coverImage, gradient, borderColor, isOpen, onToggle, children, variants }: CollapsibleSectionProps) => (
     <motion.section variants={variants} className="collapsible-section" style={{ marginBottom: '18px' }}>
         <button
             className="section-toggle glass-card"
@@ -273,9 +384,9 @@ const CollapsibleSection = ({ title, coverImage, isOpen, onToggle, children, var
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
-                background: '#ffffff',
-                border: '2px solid #f1f5f9',
-                boxShadow: '0 6px 18px rgba(0,0,0,0.04)'
+                background: gradient,
+                border: `2px solid ${borderColor}`,
+                boxShadow: '0 6px 18px rgba(0,0,0,0.04)',
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -287,7 +398,7 @@ const CollapsibleSection = ({ title, coverImage, isOpen, onToggle, children, var
                             width: '48px',
                             height: '48px',
                             borderRadius: '14px',
-                            objectFit: 'cover'
+                            objectFit: 'cover',
                         }}
                     />
                 )}
@@ -318,6 +429,8 @@ const CollapsibleSection = ({ title, coverImage, isOpen, onToggle, children, var
         </AnimatePresence>
     </motion.section>
 );
+
+/* ─── Helpers ──────────────────────────────────────────── */
 
 const getDifficultyName = (l: number) => {
     if (l === 1) return 'Einfach';
